@@ -1,0 +1,101 @@
+[
+  {
+    "topicName": "Crypto",
+    "period": {
+      "start": "2023-06-01 00:00:00", 
+      "end": "2023-06-30 23:59:59"
+    },
+    "metrics": {
+      "totalMentions": 18976,
+      "peopleTalking": 9876,
+      "engagement": 1800000,
+      "publicSentiment": 7
+    },
+    "filters": {
+      "inclusion": {
+        "keywords": [
+          ["數字", "虛擬"],
+          ["加密貨幣"],
+          ["比特幣"],
+          ["區塊鏈"],
+          ["以太坊"],
+          ["穩定幣"],
+          ["虛擬資產"],
+          ["數字貨幣"]
+        ],
+        "logic": "((keywords[0] OR keywords[1] OR keywords[2]) AND (keywords[3] OR keywords[4] OR keywords[5]) AND (keywords[6] OR keywords[7]))"
+      },
+      "exclusion": {
+        "keywords": ["FTX", "Test", "Testing"]
+      }
+    },
+    "channels": [
+      "Facebook",
+      "Instagram", 
+      "X",
+      "OnlineForum"
+    ]
+  },
+  {
+    "topicName": "Artificial Intelligence",
+    "period": {
+      "start": "2023-06-01 00:00:00",
+      "end": "2023-06-30 23:59:59"
+    },
+    "metrics": {
+      "totalMentions": 22567,
+      "peopleTalking": 12453,
+      "engagement": 2500000,
+      "publicSentiment": 8
+    },
+  "filters": {
+    "inclusion": {
+      "keywords": [
+        ["數字", "虛擬"],
+        ["加密貨幣"],
+        ["比特幣"],
+        ["區塊鏈"],
+        ["以太坊"],
+        ["穩定幣"],
+        ["虛擬資產"],
+        ["數字貨幣"]
+      ],
+      "logic": "((keywords[0] OR keywords[1] OR keywords[2]) AND (keywords[3] OR keywords[4] OR keywords[5]) AND (keywords[6] OR keywords[7]))"
+    },
+    "exclusion": {
+      "keywords": ["FTX", "Test", "Testing"]
+    }
+  }
+  },
+  {
+    "topicName": "SFC CEO Bella",
+    "period": {
+      "start": "2023-06-01 00:00:00",
+      "end": "2023-06-30 23:59:59"
+    },
+    "metrics": {
+      "totalMentions": 12567,
+      "peopleTalking": 9512,
+      "engagement": 250000,
+      "publicSentiment": 3
+    },
+    "filters": {
+    "inclusion": {
+      "keywords": [
+        ["數字", "虛擬"],
+        ["加密貨幣"],
+        ["比特幣"],
+        ["區塊鏈"],
+        ["以太坊"],
+        ["穩定幣"],
+        ["虛擬資產"],
+        ["數字貨幣"]
+      ],
+      "logic": "((keywords[0] OR keywords[1] OR keywords[2]) AND (keywords[3] OR keywords[4] OR keywords[5]) AND (keywords[6] OR keywords[7]))"
+    },
+    "exclusion": {
+      "keywords": ["FTX", "Test", "Testing"]
+    }
+  }
+  }
+]
