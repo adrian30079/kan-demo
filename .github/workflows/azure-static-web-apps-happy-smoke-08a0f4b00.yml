@@ -9,18 +9,7 @@ on:
     branches:
       - main
 
-jobs:
-  pm2-configuration:
-    runs-on: ubuntu-latest
-    steps:
-        - uses: actions/checkout@v3 #checkout code from repository, so we code downloaded in runner.
-        - uses: actions/setup-node@v3 #setup nodejs in our runner
-        - run: npm install pm2@latest -g #install pm2 global
-        - run: pm2 -V #check pm2 version
-        - run: pm2 list #check pm2 list
-        #running pm2 in mode cluster and --watch set to auto restart if index.js have changes.
-        - run: pm2 start index.js --watch -i max
-  
+jobs:  
   build_and_deploy_job:
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
     runs-on: ubuntu-latest
@@ -42,7 +31,7 @@ jobs:
           app_location: "./app" # App source code path
           api_location: "" # Api source code path - optional
           output_location: "" # Built app content directory - optional
-          app_build_command: 'pm2 start "npm run dev" --name kangaroo-demo'
+          app_build_command: 'npm run dev&'
           ###### End of Repository/Build Configurations ######
 
   close_pull_request_job:
