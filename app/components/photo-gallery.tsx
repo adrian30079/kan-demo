@@ -45,6 +45,31 @@ export function PhotoGallery({ images, onClose }: PhotoGalleryProps) {
     setCurrentIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length)
   }
 
+  const getCalloutContent = (index: number) => {
+    switch (index) {
+      case 0:
+        return {
+          icon: "/img/media/WhatsApp.png",
+          alt: "WhatsApp",
+          link: "https://chat.coinunited.whatsapp.com/35633267vg23"
+        };
+      case 1:
+        return {
+          icon: "/img/media/WeChat.png",
+          alt: "WeChat",
+          link: "https://wa.me/coinunitedking66012851sccs12.241.23"
+        };
+      case 3:
+        return {
+          icon: null, // Will use Lucide Link icon
+          alt: "Link",
+          link: "https://tinyurl.com/crtyptocasf5231.231542.gh4"
+        };
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-md z-50">
       <div className="bg-white w-full h-full max-w-7xl max-h-[90vh] rounded-lg shadow-lg flex flex-col mx-4 relative">
@@ -130,6 +155,31 @@ export function PhotoGallery({ images, onClose }: PhotoGalleryProps) {
               >
                 <ChevronRight className="h-12 w-12" />
               </Button>
+              
+              {/* Add the callout card */}
+              {getCalloutContent(currentIndex) !== null && (
+                <div className="absolute bottom-28 right-4 bg-white/90 p-2 rounded-lg shadow-lg">
+                  <div className="flex items-center space-x-2">
+                    {getCalloutContent(currentIndex)?.icon ? (
+                      <img 
+                        src={getCalloutContent(currentIndex)?.icon} 
+                        alt={getCalloutContent(currentIndex)?.alt} 
+                        className="w-4 h-4" 
+                      />
+                    ) : (
+                      <Link className="h-4 w-4" />
+                    )}
+                    <a 
+                      href={getCalloutContent(currentIndex)?.link}
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline text-sm"
+                    >
+                      {getCalloutContent(currentIndex)?.link}
+                    </a>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>

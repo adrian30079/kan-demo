@@ -72,7 +72,7 @@ interface TopicAnalysisProps {
 export function TopicAnalysisComponent({ topic, onBack, isFeaturedTopic = false }: TopicAnalysisProps) {
   const { toast } = useToast()
   const [activeTab, setActiveTab] = useState("Overview")
-  const [timeRange, setTimeRange] = useState("30d")
+  const [timeRange, setTimeRange] = useState("7d")
   const [filterPanel, setFilterPanel] = useState({
     resultType: '',
     dateRange: undefined as DateRange | undefined,
@@ -236,7 +236,7 @@ export function TopicAnalysisComponent({ topic, onBack, isFeaturedTopic = false 
               ))}
             </TabsList>
             <TabsContent value="Overview">
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mt-6">
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">
@@ -282,6 +282,38 @@ export function TopicAnalysisComponent({ topic, onBack, isFeaturedTopic = false 
                   </CardContent>
                 </Card>
               </div>
+              <Card className="mb-6 mt-6">
+                <CardContent className="flex justify-between items-center py-4">
+                  <div className="flex flex-row items-center">
+                  <div className="text-sm ml-2 pr-4">Total Entities</div>
+                    <div className="text-2xl font-bold">21</div>
+                  </div>
+                  <div className="w-px h-12 bg-gray-200" />
+                  <div className="flex flex-row items-center">
+                    <div className="text-sm ml-2 pr-4">Total URLs</div>
+                    <div className="text-2xl font-bold">725</div>
+                  </div>
+                  <div className="w-px h-12 bg-gray-200" />
+                  <div className="flex flex-row items-center">
+                    <div>
+                      <div className="flex flex-row items-center">
+                        <div className="text-sm ml-2 pr-2">Total Groups</div>
+                        <div className="text-2xl font-bold pr-6">321</div>
+                        <div className="flex flex-row gap-4 text-sm text-muted-foreground mt-1">
+                        <div className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 rounded">
+                          <img src="/img/media/WhatsApp.png" alt="WhatsApp" className="w-4 h-4" />
+                          <span>WhatsApp 220</span>
+                        </div>
+                        <div className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 rounded">
+                          <img src="/img/media/WeChat.png" alt="WeChat" className="w-4 h-4" />
+                          <span>WeChat 101</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
               <div className="mt-6">
                 <Card>
                   <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">

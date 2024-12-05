@@ -88,18 +88,18 @@ function TableOverlay({
   )
 }
 
-// Update the dummy entities data with specific colors
+// Update the dummy entities data with bank-related names
 const dummyEntitiesData = [
-  { entity: "我要做股神", color: "#FF6B6B" },
-  { entity: "CoinUnited", color: "#4ECDC4" },
-  { entity: "JPEX家庭", color: "#45B7D1" },
-  { entity: "比特幣", color: "#96CEB4" },
-  { entity: "區塊鏈", color: "#FFEEAD" },
-  { entity: "加密貨幣", color: "#D4A5A5" },
-  { entity: "NFT", color: "#9B5DE5" },
-  { entity: "Web3", color: "#00BBF9" },
-  { entity: "元宇宙", color: "#F15BB5" },
-  { entity: "DeFi", color: "#FEE440" },
+  { entity: "HSBC", color: "#FF6B6B" },
+  { entity: "Goldman Sachs", color: "#4ECDC4" },
+  { entity: "JP Morgan", color: "#45B7D1" },
+  { entity: "Morgan Stanley", color: "#96CEB4" },
+  { entity: "Citibank", color: "#FFEEAD" },
+  { entity: "Bank of America", color: "#D4A5A5" },
+  { entity: "Wells Fargo", color: "#9B5DE5" },
+  { entity: "Deutsche Bank", color: "#00BBF9" },
+  { entity: "UBS", color: "#F15BB5" },
+  { entity: "Credit Suisse", color: "#FEE440" },
 ]
 
 export function InspectTabComponent() {
@@ -226,16 +226,16 @@ export function InspectTabComponent() {
         
         // Base values with more variation
         const baseValue = {
-          "我要做股神": 600 + Math.sin(dayOfMonth / 3) * 150,
-          "CoinUnited": 1800 + (dayOfMonth === 17 ? 1000 : 0), // Spike on day 15
-          "JPEX家庭": 1500 + (dayOfMonth === 28 ? 1200 : 0), // Spike on day 7
-          "比特幣": 1000 + Math.cos(dayOfMonth / 4) * 200,
-          "區塊鏈": 750 + (dayOfMonth % 7 === 0 ? 700 : 0), // Periodic spikes
-          "加密貨幣": 700 + (dayOfMonth < 10 ? -800 : 0), // Low start
-          "NFT": 650 + (dayOfMonth > 25 ? -500 : 0), // Low end
-          "Web3": 260 + Math.sin(dayOfMonth / 2) * 250,
-          "元宇宙": 350 + (dayOfMonth % 5 === 0 ? 200 : -100), // Alternating pattern
-          "DeFi": 150 + Math.random() * 200, // High volatility
+          "HSBC": 600 + Math.sin(dayOfMonth / 3) * 150,
+          "Goldman Sachs": 1800 + (dayOfMonth === 17 ? 1000 : 0), // Spike on day 15
+          "JP Morgan": 1500 + (dayOfMonth === 28 ? 1200 : 0), // Spike on day 7
+          "Morgan Stanley": 1000 + Math.cos(dayOfMonth / 4) * 200,
+          "Citibank": 750 + (dayOfMonth % 7 === 0 ? 700 : 0), // Periodic spikes
+          "Bank of America": 700 + (dayOfMonth < 10 ? -800 : 0), // Low start
+          "Wells Fargo": 650 + (dayOfMonth > 25 ? -500 : 0), // Low end
+          "Deutsche Bank": 260 + Math.sin(dayOfMonth / 2) * 250,
+          "UBS": 350 + (dayOfMonth % 5 === 0 ? 200 : -100), // Alternating pattern
+          "Credit Suisse": 150 + Math.random() * 200, // High volatility
         }[entity] || 0;
 
         // Add random fluctuation with more variation

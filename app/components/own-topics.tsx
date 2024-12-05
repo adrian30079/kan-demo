@@ -45,7 +45,7 @@ export function OwnTopics({
           type="text"
           placeholder="Search topics..."
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          // onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
       {topics.length > 0 ? (
@@ -58,14 +58,14 @@ export function OwnTopics({
             >
               <TopicCard
                 topic={topic}
-                isFeaturedTopic={false}
+                isFeatured={false}
                 isPinned={pinnedTopics.has(topic.id)}
                 onDuplicate={onDuplicate}
-                onViewAnalysis={onViewAnalysis}
-                onAddComparison={onAddComparison}
+                onViewDetailedAnalysis={onViewAnalysis}
+                onAddForComparison={onAddComparison}
                 onPinTopic={onPinTopic}
-                onEditDelete={onEditDelete}
-                completedActions={completedActions}
+                onEmojiChange={onEditDelete}
+                onImageChange={() => {}}
               />
             </Collapsible>
           ))}
