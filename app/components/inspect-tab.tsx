@@ -23,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Bar, BarChart, ResponsiveContainer, YAxis, Cell } from "recharts"
 
 type Post = {
   id: string
@@ -88,18 +89,18 @@ function TableOverlay({
   )
 }
 
-// Update the dummy entities data with bank-related names
+// Update the dummy entities data with specific colors
 const dummyEntitiesData = [
-  { entity: "HSBC", color: "#FF6B6B" },
-  { entity: "Goldman Sachs", color: "#4ECDC4" },
-  { entity: "JP Morgan", color: "#45B7D1" },
-  { entity: "Morgan Stanley", color: "#96CEB4" },
-  { entity: "Citibank", color: "#FFEEAD" },
-  { entity: "Bank of America", color: "#D4A5A5" },
-  { entity: "Wells Fargo", color: "#9B5DE5" },
-  { entity: "Deutsche Bank", color: "#00BBF9" },
-  { entity: "UBS", color: "#F15BB5" },
-  { entity: "Credit Suisse", color: "#FEE440" },
+  { entity: "我要做股神", color: "#FF6B6B" },
+  { entity: "CoinUnited", color: "#4ECDC4" },
+  { entity: "JPEX家庭", color: "#45B7D1" },
+  { entity: "比特幣", color: "#96CEB4" },
+  { entity: "區塊鏈", color: "#FFEEAD" },
+  { entity: "加密貨幣", color: "#D4A5A5" },
+  { entity: "NFT", color: "#9B5DE5" },
+  { entity: "Web3", color: "#00BBF9" },
+  { entity: "元宇宙", color: "#F15BB5" },
+  { entity: "DeFi", color: "#FEE440" },
 ]
 
 export function InspectTabComponent() {
@@ -226,16 +227,16 @@ export function InspectTabComponent() {
         
         // Base values with more variation
         const baseValue = {
-          "HSBC": 600 + Math.sin(dayOfMonth / 3) * 150,
-          "Goldman Sachs": 1800 + (dayOfMonth === 17 ? 1000 : 0), // Spike on day 15
-          "JP Morgan": 1500 + (dayOfMonth === 28 ? 1200 : 0), // Spike on day 7
-          "Morgan Stanley": 1000 + Math.cos(dayOfMonth / 4) * 200,
-          "Citibank": 750 + (dayOfMonth % 7 === 0 ? 700 : 0), // Periodic spikes
-          "Bank of America": 700 + (dayOfMonth < 10 ? -800 : 0), // Low start
-          "Wells Fargo": 650 + (dayOfMonth > 25 ? -500 : 0), // Low end
-          "Deutsche Bank": 260 + Math.sin(dayOfMonth / 2) * 250,
-          "UBS": 350 + (dayOfMonth % 5 === 0 ? 200 : -100), // Alternating pattern
-          "Credit Suisse": 150 + Math.random() * 200, // High volatility
+          "股市達人阿強": 600 + Math.sin(dayOfMonth / 3) * 150,
+          "CoinUnited": 1800 + (dayOfMonth === 17 ? 1000 : 0), // Spike on day 15
+          "JPEX家庭": 1500 + (dayOfMonth === 28 ? 1200 : 0), // Spike on day 7
+          "比特幣": 1000 + Math.cos(dayOfMonth / 4) * 200,
+          "區塊鏈": 750 + (dayOfMonth % 7 === 0 ? 700 : 0), // Periodic spikes
+          "加密貨幣": 700 + (dayOfMonth < 10 ? -800 : 0), // Low start
+          "NFT": 650 + (dayOfMonth > 25 ? -500 : 0), // Low end
+          "Web3": 260 + Math.sin(dayOfMonth / 2) * 250,
+          "元宇宙": 350 + (dayOfMonth % 5 === 0 ? 200 : -100), // Alternating pattern
+          "DeFi": 150 + Math.random() * 200, // High volatility
         }[entity] || 0;
 
         // Add random fluctuation with more variation
@@ -259,6 +260,19 @@ export function InspectTabComponent() {
       ])
     ) satisfies ChartConfig
   }, [])
+
+  const last7DaysBarData = useMemo(() => {
+    const entities = topEntities.slice(0, 10)
+    return entities.map(entity => {
+      const colorMatch = dummyEntitiesData.find(e => e.entity === entity.entity)
+      return {
+        name: entity.entity,
+        value: entity.count,
+        // Use the matched color or a default color if no match is found
+        color: colorMatch?.color || "#00857C"
+      }
+    })
+  }, [topEntities])
 
   return (
     <div className="space-y-6">
@@ -505,6 +519,83 @@ export function InspectTabComponent() {
             >
               <ChevronRight className="h-4 w-4" />
             </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="mt-6">
+        <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
+          <div className="grid flex-1 gap-1 text-center sm:text-left">
+            <CardTitle>Entity Mentions - Last 7 Days</CardTitle>
+            <CardDescription>
+              Showing total mentions for top 10 entities over the past week
+            </CardDescription>
+          </div>
+          <Select value={timeRange} onValueChange={setTimeRange}>
+            <SelectTrigger
+              className="w-[160px] rounded-lg sm:ml-auto"
+              aria-label="Select time range"
+            >
+              <SelectValue placeholder="Last 7 days" />
+            </SelectTrigger>
+            <SelectContent className="rounded-xl">
+              <SelectItem value="90d">Last 3 months</SelectItem>
+              <SelectItem value="30d">Last 30 days</SelectItem>
+              <SelectItem value="7d">Last 7 days</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button variant="outline" size="sm">
+            <Download className="mr-2 h-4 w-4" />
+          </Button>
+          <Select>
+            <SelectTrigger className="w-[100px] rounded-lg">
+              <SelectValue placeholder="Top 10" />
+            </SelectTrigger>
+            <SelectContent className="rounded-xl">
+              <SelectItem value="10">Top 10</SelectItem>
+              <SelectItem value="25">Top 25</SelectItem>
+              <SelectItem value="50">Top 50</SelectItem>
+              <SelectItem value="100">Top 100</SelectItem>
+              <SelectItem value="200">Top 200</SelectItem>
+              <SelectItem value="300">Top 300</SelectItem>
+              <SelectItem value="400">Top 400</SelectItem>
+              <SelectItem value="500">Top 500</SelectItem>
+              <SelectItem value="1000">Top 1000</SelectItem>
+              <SelectItem value="1500">Top 1500</SelectItem>
+            </SelectContent>
+          </Select>
+        </CardHeader>
+        <CardContent>
+          <ResponsiveContainer width="100%" height={350} style={{ paddingTop: '10px' }}>
+            <BarChart data={last7DaysBarData} layout="vertical">
+              <XAxis type="number" />
+              <YAxis 
+                type="category" 
+                dataKey="name" 
+                width={100}
+                tickFormatter={(value) => value.length > 15 ? `${value.slice(0, 15)}...` : value}
+              />
+              <Bar
+                dataKey="value"
+                radius={[4, 4, 4, 4]}
+                label={{ position: 'right', fill: '#213938' }}
+              >
+                {last7DaysBarData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+          <div className="mb-4 mt-4 flex flex-wrap gap-4">
+            {last7DaysBarData.map((entry) => (
+              <div key={entry.name} className="flex items-center gap-2">
+                <div 
+                  className="h-3 w-3 rounded-full" 
+                  style={{ backgroundColor: entry.color }}
+                />
+                <span className="text-sm">{entry.name}</span>
+              </div>
+            ))}
           </div>
         </CardContent>
       </Card>

@@ -471,12 +471,12 @@ export function DashboardComponent() {
                 <div className="relative h-10 w-10 py-2">
                   <img
                     key={1}
-                    src="/img/logo-sfc.png"
+                    src="/img/logo-new.png"
                     alt="SFC logo"
                     className="object-contain w-full h-full"
                   />
                 </div>
-                <span className="text-lg text-[#00857C]">Kangaroo</span>
+                <span className="text-lg text-[#00857C]">Sensor</span>
               </Button>
             )}
           </div>
