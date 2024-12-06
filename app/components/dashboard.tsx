@@ -468,15 +468,15 @@ export function DashboardComponent() {
                 className="flex items-center font-semibold w-full justify-start hover:text-[#00857C]"
                 onClick={() => setActiveTab('featured-topics')}
               >
-                <div className="relative h-10 w-10">
+                <div className="relative h-10 w-10 py-2">
                   <img
                     key={1}
-                    src="/img/logo-sfc.jpg"
+                    src="/img/logo-new.png"
                     alt="SFC logo"
                     className="object-contain w-full h-full"
                   />
                 </div>
-                <span>Kangaroo</span>
+                <span className="text-lg text-[#00857C]">Sensor</span>
               </Button>
             )}
           </div>

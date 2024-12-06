@@ -39,7 +39,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { Maximize2, AlertTriangle, BarChart2, Tag, ThumbsUp, MessageSquare, Share2, ExternalLink } from 'lucide-react'
-import { QueryFilters } from './QueryFilters'
+import { QueryFilters } from './filter'
 
 type QueryResult = {
   id: number;

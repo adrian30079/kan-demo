@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { Badge } from "@/components/ui/badge"
-import { Flame, Clock, Search, Globe, Link, RefreshCw, Loader2, ArrowRight, ChevronDown, X, Plus, Image as ImageIcon } from 'lucide-react'
+import { Flame, Clock, Search, Globe, Link, WandSparkles, Loader2, ArrowRight, ChevronDown, X, Plus, Image as ImageIcon, MessageSquare, Share2, Heart, Copy, Tag, Pin, SquareArrowOutUpRight } from 'lucide-react'
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Input } from "@/components/ui/input"
@@ -50,6 +50,8 @@ export function PostMonitoringCardsComponent({
   const [showHighlightTags, setShowHighlightTags] = React.useState(false)
   const [newHighlightTag, setNewHighlightTag] = React.useState('')
   const [showGallery, setShowGallery] = React.useState(false)
+  const [translationStates, setTranslationStates] = React.useState<{[key: string]: string | null}>({})
+  const [expandedLinkIds, setExpandedLinkIds] = React.useState<Set<string>>(new Set())
 
   const sortedData = React.useMemo(() => {
     let sorted = [...postsData.posts]
@@ -79,13 +81,18 @@ export function PostMonitoringCardsComponent({
 
     if (sortKey) {
       sorted.sort((a, b) => {
-        if (sortKey === "postDate") {
-          return new Date(b.postDate).getTime() - new Date(a.postDate).getTime()
+        switch (sortKey) {
+          case "engagementIndexDesc":
+            return b.engagementIndex - a.engagementIndex
+          case "engagementIndexAsc":
+            return a.engagementIndex - b.engagementIndex
+          case "postDateDesc":
+            return new Date(b.postDate).getTime() - new Date(a.postDate).getTime()
+          case "postDateAsc":
+            return new Date(a.postDate).getTime() - new Date(b.postDate).getTime()
+          default:
+            return 0
         }
-        if (sortKey === "group") {
-          return a.group.localeCompare(b.group)
-        }
-        return (b[sortKey] as number) - (a[sortKey] as number)
       })
     }
     return sorted.filter(post =>
@@ -158,6 +165,25 @@ export function PostMonitoringCardsComponent({
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
 
+  const handleTranslation = (postId: string, language: string | null) => {
+    setTranslationStates(prev => ({
+      ...prev,
+      [postId]: language
+    }))
+  }
+
+  const toggleLinkBlock = (postId: string) => {
+    setExpandedLinkIds(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(postId)) {
+        newSet.delete(postId)
+      } else {
+        newSet.add(postId)
+      }
+      return newSet
+    })
+  }
+
   return (
     <div className="flex flex-col h-screen">
       <div className="flex items-center justify-between space-x-4 p-4">
@@ -194,10 +220,10 @@ export function PostMonitoringCardsComponent({
             className="border rounded p-1"
           >
             <option value="">Sort by</option>
-            <option value="engagementIndex">Engagement Index</option>
-            <option value="mentions">Mentions</option>
-            <option value="postDate">Date</option>
-            <option value="group">With Groups</option>
+            <option value="engagementIndexDesc">Engagement (Descending)</option>
+            <option value="engagementIndexAsc">Engagement (Ascending)</option>
+            <option value="postDateDesc">Date (Descending)</option>
+            <option value="postDateAsc">Date (Ascending)</option>
           </select>
           <Button 
             onClick={toggleAISummary} 
@@ -267,9 +293,9 @@ export function PostMonitoringCardsComponent({
                   {isRegeneratingLoading ? (
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                   ) : (
-                    <RefreshCw className="h-4 w-4 mr-2" />
+                    <Copy className="h-4 w-4 mr-2" />
                   )}
-                  Regenerate
+                  Copy
                 </Button>
               </div>
             </CardContent>
@@ -280,10 +306,11 @@ export function PostMonitoringCardsComponent({
             <div key={post.id} className="border rounded-lg p-4 shadow-sm mb-4 relative">
               <div className="flex justify-between items-center">
                 <div className="flex items-center space-x-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="24" viewBox="0 0 25 24" fill="none">
-                  <path d="M24.1466 12.0733C24.1466 5.40543 18.7413 0 12.0733 0C5.40543 0 0 5.40543 0 12.0733C0 18.0995 4.41504 23.0943 10.1869 24V15.5633H7.12139V12.0733H10.1869V9.41344C10.1869 6.38753 11.9893 4.71616 14.7472 4.71616C16.0681 4.71616 17.4498 4.95195 17.4498 4.95195V7.92312H15.9273C14.4275 7.92312 13.9598 8.8538 13.9598 9.8086V12.0733H17.3083L16.773 15.5633H13.9598V24C19.7316 23.0943 24.1466 18.0995 24.1466 12.0733Z" fill="#1877F2"/>
-                </svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="25" height="24" viewBox="0 0 25 24" fill="none">
+                    <path d="M24.1466 12.0733C24.1466 5.40543 18.7413 0 12.0733 0C5.40543 0 0 5.40543 0 12.0733C0 18.0995 4.41504 23.0943 10.1869 24V15.5633H7.12139V12.0733H10.1869V9.41344C10.1869 6.38753 11.9893 4.71616 14.7472 4.71616C16.0681 4.71616 17.4498 4.95195 17.4498 4.95195V7.92312H15.9273C14.4275 7.92312 13.9598 8.8538 13.9598 9.8086V12.0733H17.3083L16.773 15.5633H13.9598V24C19.7316 23.0943 24.1466 18.0995 24.1466 12.0733Z" fill="#1877F2"/>
+                  </svg>
                   <span>{post.group}</span>
+                  <SquareArrowOutUpRight className="h-3 w-3 text-gray-400 hover:text-gray-600" />
                 </div>
                 <div className="flex items-center space-x-2">
                   <Badge className={`${getSentimentColor(post.sentiment as "positive" | "negative" | "neutral" | "mixed")} cursor-default`}>
@@ -291,8 +318,12 @@ export function PostMonitoringCardsComponent({
                   </Badge>
                   <Flame className="h-4 w-4 text-red-500" />
                   <span>{post.engagementIndex}</span>
-                  <Clock className="h-4 w-4 text-blue-500" />
-                  <span>{post.mentions}</span>
+                  <MessageSquare className="h-4 w-4 text-blue-500" />
+                  <span>{post.comment}</span>
+                  <Share2 className="h-4 w-4 text-green-500" />
+                  <span>{post.share}</span>
+                  <Heart className="h-4 w-4 text-red-500" />
+                  <span>{post.likes}</span>
                 </div>
               </div>
               <div className="mt-2">
@@ -310,23 +341,64 @@ export function PostMonitoringCardsComponent({
                   }
                 </div>
                 {expandedPostIds.has(post.id) && (
-                  <div className="mt-4 p-4 bg-[#F2F5F0] rounded-lg relative">
-                    <h4 className="font-semibold mb-2">AI Summary</h4>
-                    <p>This is a short summary of the post generated by AI. It highlights key points and provides a concise overview of the content.</p>
-                    <Button
-                      onClick={regenerateAISummary}
-                      variant="ghost"
-                      size="sm"
-                      className="absolute bottom-2 right-2"
-                      disabled={isRegeneratingLoading}
-                    >
-                      {isRegeneratingLoading ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <RefreshCw className="h-4 w-4" />
-                      )}
-                      <span className="sr-only">Regenerate AI Summary</span>
-                    </Button>
+                  <div className="mt-2 p-4 bg-[#F2F5F0] rounded-lg">
+                    <div>
+                      <h4 className="font-semibold mb-2">AI Summary</h4>
+                      <p>This is a short summary of the post generated by AI. It highlights key points and provides a concise overview of the content.</p>
+                      <Button
+                        onClick={regenerateAISummary}
+                        variant="ghost"
+                        size="sm"
+                        className="absolute bottom-2 right-2"
+                        disabled={isRegeneratingLoading}
+                      >
+                        {isRegeneratingLoading ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Copy className="h-4 w-4" />
+                        )}
+                        <span className="sr-only">Copy AI Summary</span>
+                      </Button>
+                    </div>
+                  </div>
+                )}
+                {expandedLinkIds.has(post.id) && (
+                  <div className="mt-2 p-2 bg-[#F2F5F0] rounded-lg text-sm">
+                    <div className="flex flex-row gap-6">
+                      <div className="flex items-center space-x-2">
+                        <img src="/img/media/WhatsApp.png" alt="WhatsApp" className="w-4 h-4" />
+                        <a 
+                          href="https://chat.coinunited.whatsapp.com/35633267vg23" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:underline"
+                        >
+                          https://chat.coinunited.whatsapp.com/35633267vg23
+                        </a>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <img src="/img/media/WeChat.png" alt="WeChat" className="w-4 h-4" />
+                        <a 
+                          href="https://wa.me/coinunitedking66012851sccs12.241.23" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:underline"
+                        >
+                          https://wa.me/coinunitedking66012851sccs12.241.23
+                        </a>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Link className="h-4 w-4" />
+                        <a 
+                          href="https://tinyurl.com/crtyptocasf5231.231542.gh4" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:underline"
+                        >
+                          https://tinyurl.com/crtyptocasf5231.231542.gh4
+                        </a>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
@@ -334,14 +406,19 @@ export function PostMonitoringCardsComponent({
                 {post.classifiedContent.map((content, index) => (
                   <Badge 
                     key={`classified-${index}`} 
-                    className="bg-[#EDFBF9] text-[#32504C] border-none mr-1"
+                    className="bg-[#EDFBF9] text-[#32504C] border-none mr-1 flex items-center space-x-1"
                   >
-                    {content}
+                    <Tag className="h-3 w-3" />
+                    <span>{content}</span>
                   </Badge>
                 ))}
                 {post.ner.map((entity, index) => (
-                  <Badge key={`ner-${index}`} variant="outline">
-                    {entity}
+                  <Badge 
+                    key={`ner-${index}`} 
+                    variant="outline" 
+                    className="flex items-center space-x-1"
+                  >
+                    <span>{entity}</span>
                   </Badge>
                 ))}
               </div>
@@ -363,11 +440,19 @@ export function PostMonitoringCardsComponent({
                   </Button>
                 )}
                 {post.linkExtracted && (
-                  <a href={post.URL} target="_blank" rel="noopener noreferrer">
-                    <Button variant="ghost" size="sm" className="text-gray-400 hover:text-gray-600">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-gray-400 hover:text-gray-600"
+                    onClick={() => toggleLinkBlock(post.id)}
+                  >
+                    <div className="relative">
                       <Link className="h-4 w-4" />
-                    </Button>
-                  </a>
+                      <span className="absolute -top-2 -right-2 text-xs bg-[#00857C] text-white rounded-full w-4 h-4 flex items-center justify-center">
+                        3
+                      </span>
+                    </div>
+                  </Button>
                 )}
                 <Button
                   variant="ghost"
@@ -382,24 +467,66 @@ export function PostMonitoringCardsComponent({
                   {postSummaryLoading === post.id ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="19" viewBox="0 0 24 19" fill="none">
-                      <path d="M0.623518 18.323C-0.207839 17.493 -0.207839 16.1442 0.623518 15.3142L12.0178 3.91991C12.2945 3.64323 12.7441 3.64323 13.0208 3.91991L15.028 5.9258C15.3047 6.20381 15.3047 6.65207 15.028 6.93008L3.63369 18.323C2.80233 19.1544 1.45487 19.1544 0.623518 18.323Z" fill="#6D6D6D"/>
-                      <path d="M18.3245 0.623518C19.1559 1.45487 19.1559 2.80233 18.3245 3.63236L17.5357 4.42115C17.259 4.69783 16.8108 4.69783 16.5328 4.42115L14.5269 2.41393C14.2489 2.13725 14.2489 1.68766 14.5269 1.41098L15.3143 0.623518C16.1457 -0.207839 17.4931 -0.207839 18.3245 0.623518Z" fill="#6D6D6D"/>
-                      <path d="M21.8173 4.48384C21.7893 4.31225 21.651 4.16992 21.4767 4.16992C21.3025 4.16992 21.1641 4.31225 21.1389 4.48517C21.0019 5.4083 20.2716 6.13859 19.3485 6.27558C19.1755 6.30086 19.0332 6.43919 19.0332 6.61345C19.0332 6.7877 19.1755 6.92604 19.3471 6.95397C20.2716 7.10162 21.0032 7.88643 21.1389 8.82155C21.1641 8.99447 21.3025 9.1368 21.4767 9.1368C21.651 9.1368 21.7907 8.99447 21.8146 8.82155C21.9529 7.85452 22.7178 7.08967 23.6848 6.95132C23.8577 6.92737 24.0001 6.7877 24.0001 6.61345C24.0001 6.4392 23.8577 6.30086 23.6848 6.27559C22.7497 6.13991 21.9649 5.40963 21.8173 4.48384Z" fill="#6D6D6D"/>
-                      <path d="M17.72 9.56901C17.6908 9.33091 17.4992 9.13672 17.2598 9.13672C17.0203 9.13672 16.8288 9.33092 16.7995 9.56901C16.604 11.1386 15.3603 12.3823 13.7907 12.5779C13.5526 12.6071 13.3584 12.7987 13.3584 13.0381C13.3584 13.2776 13.5526 13.4691 13.7907 13.4984C15.3603 13.6939 16.604 14.9376 16.7995 16.5072C16.8288 16.7453 17.0203 16.9395 17.2598 16.9395C17.4992 16.9395 17.6908 16.7453 17.72 16.5072C17.9156 14.9376 19.1593 13.6939 20.7289 13.4984C20.967 13.4691 21.1612 13.2776 21.1612 13.0381C21.1612 12.7987 20.967 12.6071 20.7289 12.5779C19.1593 12.3823 17.9156 11.1386 17.72 9.56901Z" fill="#6D6D6D"/>
-                    </svg>
+                    <WandSparkles className="h-4 w-4" />
                   )}
+                  <span className="sr-only">Copy AI Summary</span>
                 </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="sm" className="text-gray-400 hover:text-gray-600">
-                      <Globe className="h-4 w-4" />
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className={cn(
+                        "text-gray-400 hover:text-gray-600",
+                        translationStates[post.id] && "text-[#00857C]"
+                      )}
+                    >
+                      <Globe className={cn(
+                        "h-4 w-4",
+                        translationStates[post.id] && "text-[#00857C]"
+                      )} />
+                      {translationStates[post.id] && (
+                        <span className="ml-0.5 text-xs bg-[#00857C] text-white rounded px-1">
+                          {translationStates[post.id] === "English" ? "EN" : 
+                           translationStates[post.id] === "繁體中文" ? "繁中" : 
+                           translationStates[post.id] === "简体中文" ? "简中" : ""}
+                        </span>
+                      )}
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
-                    <DropdownMenuItem>English</DropdownMenuItem>
-                    <DropdownMenuItem>繁體中文</DropdownMenuItem>
-                    <DropdownMenuItem>简中文</DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onSelect={() => handleTranslation(post.id, null)}
+                      className={cn(
+                        !translationStates[post.id] && "font-semibold"
+                      )}
+                    >
+                      Original
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onSelect={() => handleTranslation(post.id, "English")}
+                      className={cn(
+                        translationStates[post.id] === "English" && "font-semibold"
+                      )}
+                    >
+                      English
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onSelect={() => handleTranslation(post.id, "繁體中文")}
+                      className={cn(
+                        translationStates[post.id] === "繁體中文" && "font-semibold"
+                      )}
+                    >
+                      繁體中文
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onSelect={() => handleTranslation(post.id, "简体中文")}
+                      className={cn(
+                        translationStates[post.id] === "简体中文" && "font-semibold"
+                      )}
+                    >
+                      简体中文
+                    </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
