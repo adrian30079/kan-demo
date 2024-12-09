@@ -43,9 +43,9 @@ const calculatePlatformData = () => {
       icon: "/img/media/ic-mediatype-X.png"
     },
     { 
-      platform: "Online Forum", 
+      platform: "LIHKG", 
       percentage: Number(((channelCounts.onlineforum || 0) / totalPosts * 100).toFixed(1)),
-      icon: "/img/media/ic-mediatype-forum.png"
+      icon: "/img/media/ic-mediatype-lihkg.png"
     }
   ];
 };
@@ -92,20 +92,20 @@ const chartConfig = {
   },
   instagram: {
     label: "Instagram",
-    color: "hsl(340, 80%, 50%)",
+    color: "#00857C",
   },
   x: {
     label: "X",
-    color: "hsl(0, 0%, 0%)",
+    color: "#7a3ead",
   },
   forum: {
-    label: "Online Forum",
+    label: "LIHKG",
     color: "hsl(30, 90%, 50%)",
   },
 }
 
 export function WhereTabComponent() {
-  const [timeRange, setTimeRange] = useState("30d")
+  const [timeRange, setTimeRange] = useState("7d")
   const [showTooltip, setShowTooltip] = useState(false);
   const [showOverlay, setShowOverlay] = useState(false);
   const [selectedPlatform, setSelectedPlatform] = useState<string | null>(null);
@@ -153,7 +153,7 @@ export function WhereTabComponent() {
     // Filter posts based on selected platform
     const filteredPosts = posts.filter((post: Post) => 
       post.channel.toLowerCase() === selectedPlatform?.toLowerCase() ||
-      (selectedPlatform === "Online Forum" && post.channel.toLowerCase() === "onlineforum")
+      (selectedPlatform === "LIHKG" && post.channel.toLowerCase() === "onlineforum")
     );
 
     const handleClose = () => {
@@ -251,19 +251,19 @@ export function WhereTabComponent() {
             </CardDescription>
           </div>
           <div className="flex items-center gap-2">
-            <Select value={timeRange} onValueChange={setTimeRange}>
+            <Select value={timeRange} onValueChange={setTimeRange} defaultValue="7d">
               <SelectTrigger
                 className="w-[160px] rounded-lg sm:ml-auto"
                 aria-label="Select a time range"
               >
-                <SelectValue placeholder="Last 30 days" />
+                <SelectValue placeholder="Select a time range" />
               </SelectTrigger>
               <SelectContent className="rounded-xl">
-                <SelectItem value="30d" className="rounded-lg">
-                  Last 30 days
-                </SelectItem>
-                <SelectItem value="7d" className="rounded-lg">
+                <SelectItem value="7d" className="rounded-lg" isSelected={timeRange === '7d'}>
                   Last 7 days
+                </SelectItem>
+                <SelectItem value="30d" className="rounded-lg" isSelected={timeRange === '30d'}>
+                  Last 30 days
                 </SelectItem>
               </SelectContent>
             </Select>

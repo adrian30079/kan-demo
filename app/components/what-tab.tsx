@@ -6,7 +6,8 @@ import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import WordCloudsCard from './WordCloudsCard';
+import WordCloudsCard from './chart/WordCloudsCard';
+import { PostMonitoringCardsComponent } from './post-monitoring-cards'
 
 const hashtagsData = [
   { tag: '#crypto', count: 1234 },
@@ -28,7 +29,7 @@ export function WhatTab() {
   return (
     <div className="space-y-6">
       <div className="grid gap-6 md:grid-cols-2">
-        <Card className="col-span-2">
+        <Card>
             <WordCloudsCard />
         </Card>
         <Card>
@@ -54,34 +55,16 @@ export function WhatTab() {
             </ul>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Top Mentions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-2">
-              {topMentionsData.map((mention, index) => (
-                <li 
-                  key={index} 
-                  className="flex items-center justify-between p-2 rounded-md hover:bg-muted cursor-pointer transition-colors duration-200"
-                >
-                  <div className="flex items-center space-x-3">
-                    <Avatar>
-                      <AvatarImage src={mention.avatar} alt={mention.name} />
-                      <AvatarFallback>{mention.name.slice(0, 2)}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="font-medium">{mention.name}</p>
-                      <p className="text-sm text-muted-foreground">{mention.handle}</p>
-                    </div>
-                  </div>
-                  <span className="text-sm font-medium">{mention.mentions} mentions</span>
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
       </div>
+      
+      <Card className="col-span-2">
+        <CardHeader>
+          <CardTitle>Mentions</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <PostMonitoringCardsComponent />
+        </CardContent>
+      </Card>
     </div>
   )
 }

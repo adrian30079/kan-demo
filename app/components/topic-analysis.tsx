@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { BarChart3, MessageSquare, Filter, Download, Settings, ChevronLeft, ArrowLeft } from 'lucide-react'
+import { BarChart3, MessageSquare, Filter, Download, Settings, ChevronLeft, ArrowLeft, X } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -21,7 +21,6 @@ import { WhereTabComponent } from './where-tab'
 import { WhenTab } from './when-tab'
 import { WhatTab } from './what-tab'
 import { HowTab } from './how-tab'
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { QueryFilters } from './filter'
 import { DateRange } from "react-day-picker"
 import CreateNewTopicContent from './create-new-topic'
@@ -94,6 +93,7 @@ export function TopicAnalysisComponent({ topic, onBack, isFeaturedTopic = false 
   const [channels] = useState<any[]>([]) // Add your channels data here
   const [pendingFilterChanges, setPendingFilterChanges] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
+  const [showFilters, setShowFilters] = useState(false)
 
   const handleExport = () => {
     // Implement export functionality here
@@ -109,13 +109,11 @@ export function TopicAnalysisComponent({ topic, onBack, isFeaturedTopic = false 
   }
 
   const handleApplyFilters = () => {
-    // Implement your filter application logic here
     console.log("Applying filters:", filterPanel)
     setPendingFilterChanges(false)
   }
 
   const handleResetFilters = () => {
-    // Reset filter logic here
     setFilterPanel({
       resultType: '',
       dateRange: undefined,
@@ -155,300 +153,318 @@ export function TopicAnalysisComponent({ topic, onBack, isFeaturedTopic = false 
   }
 
   return (
-    <div className="space-y-6 p-6 bg-white overflow-y-auto">
-      {isEditing ? (
-        <CreateNewTopicContent
-          onBack={() => setIsEditing(false)}
-          existingTopics={[]} 
-          onSave={(updatedTopic) => {
-            setIsEditing(false)
-          }}
-          editingTopic={topic}
-          onDelete={handleDelete}
-          isFeaturedTopic={isFeaturedTopic}
-        />
-      ) : (
-        <div className="space-y-6 p-6 bg-white overflow-y-auto">
-          <div className="sticky top-0 bg-white z-10 py-4">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-4">
-                <Button 
-                  variant="ghost" 
-                  onClick={onBack}
-                  className="hover:bg-[#E9EEEE] hover:text-[#00857C]"
-                >
-                  <ChevronLeft className="h-4 w-4 mr-2" />
-                  Back
-                </Button>
-                <h1 className="text-3xl font-bold">{topic.name}</h1>
-              </div>
-              <div className="flex gap-2">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline">
-                      <Filter className="mr-2 h-4 w-4" />
-                      Filter
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-[400px] p-0" align="end">
-                    <QueryFilters
-                      filterPanel={filterPanel}
-                      channels={channels}
-                      selectAllChannels={true}
-                      channelsError={false}
-                      pendingFilterChanges={pendingFilterChanges}
-                      onFilterChange={handleFilterChange}
-                      onChannelToggle={() => {}}
-                      onAllChannelsToggle={() => {}}
-                      onPageToggle={() => {}}
-                      onAllPagesToggle={() => {}}
-                      onResetFilters={handleResetFilters}
-                      onApplyFilters={handleApplyFilters}
-                    />
-                  </PopoverContent>
-                </Popover>
-                <Button variant="outline">
-                  <Download className="mr-2 h-4 w-4" />
-                  Export Report
-                </Button>
-                <TooltipProvider>
-                  <UITooltip>
-                    <TooltipTrigger asChild>
-                      <Button 
-                        variant="outline" 
-                        onClick={() => setIsEditing(true)}
-                      >
-                        <Settings className="h-4 w-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Edit Keyword Settings</p>
-                    </TooltipContent>
-                  </UITooltip>
-                </TooltipProvider>
+    <div className="flex gap-6">
+      <div className="flex-1 space-y-6 p-6 mx-20 overflow-y-auto">
+        {isEditing ? (
+          <CreateNewTopicContent
+            onBack={() => setIsEditing(false)}
+            existingTopics={[]} 
+            onSave={(updatedTopic) => {
+              setIsEditing(false)
+            }}
+            editingTopic={topic}
+            onDelete={handleDelete}
+            isFeaturedTopic={isFeaturedTopic}
+          />
+        ) : (
+          <div className="space-y-6">
+            <div className="sticky top-0 z-10 py-4">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-4">
+                  <Button 
+                    variant="ghost" 
+                    onClick={onBack}
+                    className="hover:bg-[#E9EEEE] hover:text-[#00857C]"
+                  >
+                    <ChevronLeft className="h-4 w-4 mr-2" />
+                    Back
+                  </Button>
+                  <h1 className="text-3xl font-bold">{topic.name}</h1>
+                </div>
+                <div className="flex gap-2">
+                  <Button 
+                    variant={showFilters ? "default" : "outline"} 
+                    onClick={() => setShowFilters(!showFilters)}
+                    className={showFilters ? "bg-[#00857C] text-white hover:bg-[#00857C]/90" : ""}
+                  >
+                    <Filter className="mr-2 h-4 w-4" />
+                    Filters
+                  </Button>
+                  <Button variant="outline">
+                    <Download className="mr-2 h-4 w-4" />
+                    Export Report
+                  </Button>
+                  <TooltipProvider>
+                    <UITooltip>
+                      <TooltipTrigger asChild>
+                        <Button 
+                          variant="outline" 
+                          onClick={() => setIsEditing(true)}
+                        >
+                          <Settings className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Edit Keyword Settings</p>
+                      </TooltipContent>
+                    </UITooltip>
+                  </TooltipProvider>
+                </div>
               </div>
             </div>
-          </div>
-          <Tabs defaultValue="Overview" className="w-full">
-            <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8">
-              {tabItems.map((tab) => (
-                <TabsTrigger key={tab} value={tab} onClick={() => setActiveTab(tab)}>{tab}</TabsTrigger>
-              ))}
-            </TabsList>
-            <TabsContent value="Overview">
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mt-6">
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      Total Mentions
-                    </CardTitle>
-                    <MessageSquare className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">45,231</div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      Total People Talking
-                    </CardTitle>
-                    <BarChart3 className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">20,456</div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      Average Mentions Per Day
-                    </CardTitle>
-                    <BarChart3 className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">1,508</div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      Average People Talking Per Day
-                    </CardTitle>
-                    <BarChart3 className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">682</div>
-                  </CardContent>
-                </Card>
-              </div>
-              <Card className="mb-6 mt-6">
-                <CardContent className="flex justify-between items-center py-4">
-                  <div className="flex flex-row items-center">
-                  <div className="text-sm ml-2 pr-4">Total Entities</div>
-                    <div className="text-2xl font-bold">21</div>
-                  </div>
-                  <div className="w-px h-12 bg-gray-200" />
-                  <div className="flex flex-row items-center">
-                    <div className="text-sm ml-2 pr-4">Total URLs</div>
-                    <div className="text-2xl font-bold">725</div>
-                  </div>
-                  <div className="w-px h-12 bg-gray-200" />
-                  <div className="flex flex-row items-center">
-                    <div>
-                      <div className="flex flex-row items-center">
-                        <div className="text-sm ml-2 pr-2">Total Groups</div>
-                        <div className="text-2xl font-bold pr-6">321</div>
-                        <div className="flex flex-row gap-4 text-sm text-muted-foreground mt-1">
-                        <div className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 rounded">
-                          <img src="/img/media/WhatsApp.png" alt="WhatsApp" className="w-4 h-4" />
-                          <span>WhatsApp 220</span>
-                        </div>
-                        <div className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 rounded">
-                          <img src="/img/media/WeChat.png" alt="WeChat" className="w-4 h-4" />
-                          <span>WeChat 101</span>
+            <Tabs defaultValue="Overview" className="w-full">
+              <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8">
+                {tabItems.map((tab) => (
+                  <TabsTrigger key={tab} value={tab} onClick={() => setActiveTab(tab)}>{tab}</TabsTrigger>
+                ))}
+              </TabsList>
+              <TabsContent value="Overview">
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mt-6">
+                  <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">
+                        Total Mentions
+                      </CardTitle>
+                      <MessageSquare className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">45,231</div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">
+                        Total People Talking
+                      </CardTitle>
+                      <BarChart3 className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">20,456</div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">
+                        Average Mentions Per Day
+                      </CardTitle>
+                      <BarChart3 className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">1,508</div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">
+                        Average People Talking Per Day
+                      </CardTitle>
+                      <BarChart3 className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">682</div>
+                    </CardContent>
+                  </Card>
+                </div>
+                <Card className="mb-6 mt-6">
+                  <CardContent className="flex justify-between items-center py-4">
+                    <div className="flex flex-row items-center">
+                    <div className="text-sm ml-2 pr-4">Total Entities</div>
+                      <div className="text-2xl font-bold">21</div>
+                    </div>
+                    <div className="w-px h-12 bg-gray-200" />
+                    <div className="flex flex-row items-center">
+                      <div className="text-sm ml-2 pr-4">Total URLs</div>
+                      <div className="text-2xl font-bold">725</div>
+                    </div>
+                    <div className="w-px h-12 bg-gray-200" />
+                    <div className="flex flex-row items-center">
+                      <div>
+                        <div className="flex flex-row items-center">
+                          <div className="text-sm ml-2 pr-2">Total Groups</div>
+                          <div className="text-2xl font-bold pr-6">321</div>
+                          <div className="flex flex-row gap-4 text-sm text-muted-foreground mt-1">
+                          <div className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 rounded">
+                            <img src="/img/media/WhatsApp.png" alt="WhatsApp" className="w-4 h-4" />
+                            <span>WhatsApp 220</span>
+                          </div>
+                          <div className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 rounded">
+                            <img src="/img/media/WeChat.png" alt="WeChat" className="w-4 h-4" />
+                            <span>WeChat 101</span>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <div className="mt-6">
-                <Card>
-                  <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
-                    <div className="grid flex-1 gap-1 text-center sm:text-left">
-                      <CardTitle>Overall Volume of Mentions</CardTitle>
-                      <CardDescription>
-                        Showing mentions across different platforms
-                      </CardDescription>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Select value={timeRange} onValueChange={setTimeRange}>
-                        <SelectTrigger
-                          className="w-[160px] rounded-lg sm:ml-auto"
-                          aria-label="Select time range"
-                        >
-                          <SelectValue placeholder="Last 30 days" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="30d">Last 30 days</SelectItem>
-                          <SelectItem value="7d">Last 7 days</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <Button variant="outline" size="sm" onClick={handleExport}>
-                        <Download className="mr-2 h-4 w-4" />
-                        Export
-                      </Button>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-                    <div className="h-[350px] w-full">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart
-                          data={chartData}
-                          margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-                        >
-                          <defs>
-                            <linearGradient id="colorFacebook" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="5%" stopColor="#84E1BC" stopOpacity={0.8}/>
-                              <stop offset="95%" stopColor="#84E1BC" stopOpacity={0.1}/>
-                            </linearGradient>
-                            <linearGradient id="colorInstagram" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="5%" stopColor="#FFA69E" stopOpacity={0.8}/>
-                              <stop offset="95%" stopColor="#FFA69E" stopOpacity={0.1}/>
-                            </linearGradient>
-                            <linearGradient id="colorX" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="5%" stopColor="#93A5CF" stopOpacity={0.8}/>
-                              <stop offset="95%" stopColor="#93A5CF" stopOpacity={0.1}/>
-                            </linearGradient>
-                            <linearGradient id="colorOnlineForum" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="5%" stopColor="#FFE5B4" stopOpacity={0.8}/>
-                              <stop offset="95%" stopColor="#FFE5B4" stopOpacity={0.1}/>
-                            </linearGradient>
-                          </defs>
-                          <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                          <XAxis 
-                            dataKey="date" 
-                            axisLine={false}
-                            tickLine={false}
-                            tickMargin={10}
-                            fontSize={12}
-                            stroke="#94a3b8"
-                          />
-                          <YAxis 
-                            axisLine={false}
-                            tickLine={false}
-                            tickMargin={10}
-                            fontSize={12}
-                            stroke="#94a3b8"
-                          />
-                          <Tooltip content={<CustomTooltip />} />
-                          <Area
-                            type="monotone"
-                            dataKey="Facebook"
-                            stackId="1"
-                            stroke="#84E1BC"
-                            fill="url(#colorFacebook)"
-                          />
-                          <Area
-                            type="monotone"
-                            dataKey="Instagram"
-                            stackId="1"
-                            stroke="#FFA69E"
-                            fill="url(#colorInstagram)"
-                          />
-                          <Area
-                            type="monotone"
-                            dataKey="X"
-                            stackId="1"
-                            stroke="#93A5CF"
-                            fill="url(#colorX)"
-                          />
-                          <Area
-                            type="monotone"
-                            dataKey="Online Forum"
-                            stackId="1"
-                            stroke="#FFE5B4"
-                            fill="url(#colorOnlineForum)"
-                          />
-                        </AreaChart>
-                      </ResponsiveContainer>
-                    </div>
                   </CardContent>
                 </Card>
-              </div>
-            </TabsContent>
-            <TabsContent value="Inspect" className="mt-6">
-              <InspectTabComponent/>
-            </TabsContent>
-            <TabsContent value="What" className="mt-6">
-              <WhatTab />
-            </TabsContent>
-            <TabsContent value="Who" className="mt-6">
-              <WhoTab />
-            </TabsContent>
-            <TabsContent value="Where" className="mt-6">
-              <WhereTabComponent />
-            </TabsContent>
-            <TabsContent value="When" className="mt-6">
-              <WhenTab />
-            </TabsContent>
-            <TabsContent value="How" className="mt-6">
-              <HowTab />
-            </TabsContent>
-            <TabsContent value="Raw Data" className="mt-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Raw Data</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <RawDataComponent />
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
-        </div>
+                <div className="mt-6">
+                  <Card>
+                    <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
+                      <div className="grid flex-1 gap-1 text-center sm:text-left">
+                        <CardTitle>Overall Volume of Mentions</CardTitle>
+                        <CardDescription>
+                          Showing mentions across different platforms
+                        </CardDescription>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Select value={timeRange} onValueChange={setTimeRange}>
+                          <SelectTrigger
+                            className="w-[160px] rounded-lg sm:ml-auto"
+                            aria-label="Select time range"
+                          >
+                            <SelectValue placeholder="Last 30 days" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="30d">Last 30 days</SelectItem>
+                            <SelectItem value="7d">Last 7 days</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Button variant="outline" size="sm" onClick={handleExport}>
+                          <Download className="mr-2 h-4 w-4" />
+                          Export
+                        </Button>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+                      <div className="h-[350px] w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <AreaChart
+                            data={chartData}
+                            margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                          >
+                            <defs>
+                              <linearGradient id="colorFacebook" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#84E1BC" stopOpacity={0.8}/>
+                                <stop offset="95%" stopColor="#84E1BC" stopOpacity={0.1}/>
+                              </linearGradient>
+                              <linearGradient id="colorInstagram" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#FFA69E" stopOpacity={0.8}/>
+                                <stop offset="95%" stopColor="#FFA69E" stopOpacity={0.1}/>
+                              </linearGradient>
+                              <linearGradient id="colorX" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#93A5CF" stopOpacity={0.8}/>
+                                <stop offset="95%" stopColor="#93A5CF" stopOpacity={0.1}/>
+                              </linearGradient>
+                              <linearGradient id="colorOnlineForum" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#FFE5B4" stopOpacity={0.8}/>
+                                <stop offset="95%" stopColor="#FFE5B4" stopOpacity={0.1}/>
+                              </linearGradient>
+                            </defs>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                            <XAxis 
+                              dataKey="date" 
+                              axisLine={false}
+                              tickLine={false}
+                              tickMargin={10}
+                              fontSize={12}
+                              stroke="#94a3b8"
+                            />
+                            <YAxis 
+                              axisLine={false}
+                              tickLine={false}
+                              tickMargin={10}
+                              fontSize={12}
+                              stroke="#94a3b8"
+                            />
+                            <Tooltip content={<CustomTooltip />} />
+                            <Area
+                              type="monotone"
+                              dataKey="Facebook"
+                              stackId="1"
+                              stroke="#84E1BC"
+                              fill="url(#colorFacebook)"
+                            />
+                            <Area
+                              type="monotone"
+                              dataKey="Instagram"
+                              stackId="1"
+                              stroke="#FFA69E"
+                              fill="url(#colorInstagram)"
+                            />
+                            <Area
+                              type="monotone"
+                              dataKey="X"
+                              stackId="1"
+                              stroke="#93A5CF"
+                              fill="url(#colorX)"
+                            />
+                            <Area
+                              type="monotone"
+                              dataKey="Online Forum"
+                              stackId="1"
+                              stroke="#FFE5B4"
+                              fill="url(#colorOnlineForum)"
+                            />
+                          </AreaChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </TabsContent>
+              <TabsContent value="Inspect" className="mt-6">
+                <InspectTabComponent/>
+              </TabsContent>
+              <TabsContent value="What" className="mt-6">
+                <WhatTab />
+              </TabsContent>
+              <TabsContent value="Who" className="mt-6">
+                <WhoTab />
+              </TabsContent>
+              <TabsContent value="Where" className="mt-6">
+                <WhereTabComponent />
+              </TabsContent>
+              <TabsContent value="When" className="mt-6">
+                <WhenTab />
+              </TabsContent>
+              <TabsContent value="How" className="mt-6">
+                <HowTab />
+              </TabsContent>
+              <TabsContent value="Raw Data" className="mt-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Raw Data</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <RawDataComponent />
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            </Tabs>
+          </div>
+        )}
+      </div>
+
+      {showFilters && (
+        <Card className="h-fill w-[320px] border bg-white rounded-none relative">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute right-2 top-2"
+            onClick={() => setShowFilters(false)}
+          >
+            <X className="h-4 w-4" />
+          </Button>
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold">Filters</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <QueryFilters
+              filterPanel={filterPanel}
+              channels={channels}
+              selectAllChannels={true}
+              channelsError={false}
+              pendingFilterChanges={pendingFilterChanges}
+              onFilterChange={handleFilterChange}
+              onChannelToggle={() => {}}
+              onAllChannelsToggle={() => {}}
+              onPageToggle={() => {}}
+              onAllPagesToggle={() => {}}
+              onResetFilters={handleResetFilters}
+              onApplyFilters={handleApplyFilters}
+            />
+          </CardContent>
+        </Card>
       )}
     </div>
   )

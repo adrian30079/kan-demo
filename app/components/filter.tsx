@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -19,6 +18,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 interface Channel {
   name: string;
@@ -93,48 +97,86 @@ export function QueryFilters({
   };
 
   return (
-    <div className="p-4 space-y-6 rounded-xl">
-      {/* Date Range Picker */}
+    <div className="p-2 space-y-6 rounded-xl">
+      {/* Date Range Section */}
       <div className="space-y-2">
         <Label className="text-md font-bold">Date Range</Label>
+        <div className="flex gap-2 mb-2">
+          <Button 
+            variant="outline" 
+            size="sm"
+            className={filterPanel.dateRange?.from === undefined ? "bg-[#00857C] text-white hover:bg-[#00857C]/90" : ""}
+          >
+            Last 7 days
+          </Button>
+          <Button 
+            variant="outline"
+            size="sm"
+          >
+            Last 14 days
+          </Button>
+          <Button 
+            variant="outline"
+            size="sm"
+          >
+            Last 30 days
+          </Button>
+        </div>
         <DatePickerWithRange
           date={filterPanel.dateRange}
           onDateChange={(date) => onFilterChange('dateRange', date)}
         />
       </div>
 
-      {/* Classified Content */}
+      {/* Classified Content Dropdown */}
       <div className="space-y-2">
         <Label className="text-md font-bold">Classified Content</Label>
-        <div className="flex space-x-4">
-          <div className="flex items-center space-x-2">
-            <Checkbox 
-              id="virtualAssets"
-              checked={filterPanel.classifiedContent.virtualAssets}
-              onCheckedChange={handleClassifiedContentChange('virtualAssets')}
-              className="border-[#00857C] data-[state=checked]:bg-[#00857C]"
-            />
-            <Label htmlFor="virtualAssets">虛擬資產</Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Checkbox 
-              id="encourageInvestment"
-              checked={filterPanel.classifiedContent.encourageInvestment}
-              onCheckedChange={handleClassifiedContentChange('encourageInvestment')}
-              className="border-[#00857C] data-[state=checked]:bg-[#00857C]"
-            />
-            <Label htmlFor="encourageInvestment">慫恿投資</Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Checkbox 
-              id="encourageAccount"
-              checked={filterPanel.classifiedContent.encourageAccount}
-              onCheckedChange={handleClassifiedContentChange('encourageAccount')}
-              className="border-[#00857C] data-[state=checked]:bg-[#00857C]"
-            />
-            <Label htmlFor="encourageAccount">慫恿開戶</Label>
-          </div>
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button 
+              variant="outline" 
+              className="w-full justify-start text-left font-normal"
+            >
+              <span className="truncate">
+                {Object.entries(filterPanel.classifiedContent)
+                  .filter(([_, value]) => value)
+                  .map(([key]) => key)
+                  .join(', ') || 'Select options'}
+              </span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56 p-2">
+            <div className="flex flex-col space-y-2">
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="virtualAssets"
+                  checked={filterPanel.classifiedContent.virtualAssets}
+                  onCheckedChange={handleClassifiedContentChange('virtualAssets')}
+                  className="border-[#00857C] data-[state=checked]:bg-[#00857C]"
+                />
+                <Label htmlFor="virtualAssets">虛擬資產</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="encourageInvestment"
+                  checked={filterPanel.classifiedContent.encourageInvestment}
+                  onCheckedChange={handleClassifiedContentChange('encourageInvestment')}
+                  className="border-[#00857C] data-[state=checked]:bg-[#00857C]"
+                />
+                <Label htmlFor="encourageInvestment">慫恿投資</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox 
+                  id="encourageAccount"
+                  checked={filterPanel.classifiedContent.encourageAccount}
+                  onCheckedChange={handleClassifiedContentChange('encourageAccount')}
+                  className="border-[#00857C] data-[state=checked]:bg-[#00857C]"
+                />
+                <Label htmlFor="encourageAccount">慫恿開戶</Label>
+              </div>
+            </div>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {/* Channels Section */}

@@ -24,15 +24,8 @@ import {
   DialogTrigger,
   DialogFooter,
 } from "@/components/ui/dialog"
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command"
 import { useToast } from "@/components/ui/use-toast"
+import { ChannelPagesDialog } from "@/components/filter/channel-pages-dialog"
 
 interface KeywordGroup {
   id: string
@@ -64,20 +57,29 @@ interface Topic {
   sentiment: number;
   riskLevel: 'low' | 'medium' | 'high';
   period: { start: string; end: string };
-  impactIndex: number;
 }
 
 const dummyPages = [
-  "Mary's Investment Diary",
-  "Tech Trends Today",
-  "Eco-Friendly Living",
-  "Gourmet Recipes Hub",
-  "Fitness Journey Log",
-  "Travel Adventures Blog",
-  "DIY Home Improvement",
-  "Parenting Tips & Tricks",
-  "Book Lovers' Corner",
-  "Local Events Spotlight"
+  "加密貨幣新聞",
+  "區塊鏈技術",
+  "Bitcoin Discussion",
+  "虛擬資產投資",
+  "比特幣討論區",
+  "Ethereum Enthusiasts",
+  "Crypto Market Analysis",
+  "以太坊愛好者",
+  "加密貨幣市場分析",
+  "區塊鏈應用",
+  "加密貨幣交易策略",
+  "Crypto News",
+  "Blockchain Technology",
+  "Virtual Asset Investment",
+  "Blockchain Applications",
+  "Crypto Trading Strategies",
+  "加密貨幣交易策略",
+  "虛擬貨幣趨勢",
+  "Virtual Currency Trends",
+  "Crypto Mining"
 ]
 
 export default function CreateNewTopicContent({ onBack, existingTopics, onSave, editingTopic, onDelete, isFeaturedTopic = false }: CreateNewTopicContentProps) {
@@ -427,7 +429,6 @@ export default function CreateNewTopicContent({ onBack, existingTopics, onSave, 
       const randomPeopleTalking = Math.floor(randomMentions * 0.6); // About 60% of mentions
       const randomEngagement = `${(Math.random() * 2 + 0.5).toFixed(1)}M`; // Random between 0.5M-2.5M
       const randomSentiment = Math.floor(Math.random() * 5) + 5; // Random between 5-10
-      const randomImpactIndex = Math.floor(Math.random() * 40000) + 40000; // Random between 40000-80000
 
       const newTopic: Topic = {
         id: Date.now().toString(),
@@ -440,7 +441,6 @@ export default function CreateNewTopicContent({ onBack, existingTopics, onSave, 
         engagement: randomEngagement,
         sentiment: randomSentiment,
         riskLevel: 'low',
-        impactIndex: randomImpactIndex,
         period: {
           start: `${startDate} ${startTime}:00`,
           end: `${endDate} ${endTime}:59`
@@ -852,51 +852,13 @@ export default function CreateNewTopicContent({ onBack, existingTopics, onSave, 
                     />
                     <Label htmlFor={`channel-${channel.name}`}>{channel.name}</Label>
                   </div>
-                  <Dialog open={openChannelDialog === channel.name} onOpenChange={(isOpen) => setOpenChannelDialog(isOpen ? channel.name : null)}>
-                    <DialogTrigger asChild>
-                      <Button variant="outline" size="sm" disabled={!channel.included}>
-                        Manage Pages
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px]">
-                      <DialogHeader>
-                        <DialogTitle>Manage {channel.name} Pages</DialogTitle>
-                        <DialogDescription>
-                          Select specific pages to include or exclude.
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="py-4">
-                        <div className="flex items-center space-x-2">
-                          <Checkbox
-                            id={`selectAll-${channel.name}`}
-                            checked={channel.pages.every(page => page.included)}
-                            onCheckedChange={(checked) => toggleAllPages(channel.name, checked as boolean)}
-                          />
-                          <Label htmlFor={`selectAll-${channel.name}`}>Select All</Label>
-                        </div>
-                      </div>
-                      <Command>
-                        <CommandInput placeholder="Search pages..." />
-                        <CommandList>
-                          <CommandEmpty>No pages found.</CommandEmpty>
-                          <CommandGroup>
-                            {channel.pages.map((page) => (
-                              <CommandItem key={page.name}>
-                                <Checkbox
-                                  id={`page-${channel.name}-${page.name}`}
-                                  checked={page.included}
-                                  onCheckedChange={() => togglePageInclusion(channel.name, page.name)}
-                                />
-                                <Label htmlFor={`page-${channel.name}-${page.name}`} className="ml-2">
-                                  {page.name}
-                                </Label>
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </DialogContent>
-                  </Dialog>
+                  <ChannelPagesDialog
+                    channelName={channel.name}
+                    isDisabled={!channel.included}
+                    pages={channel.pages}
+                    onTogglePage={(pageName) => togglePageInclusion(channel.name, pageName)}
+                    onToggleAllPages={(included) => toggleAllPages(channel.name, included)}
+                  />
                 </div>
               ))}
             </div>

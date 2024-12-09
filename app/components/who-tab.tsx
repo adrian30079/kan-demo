@@ -32,11 +32,11 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 const data = [
-  { id: "m5gr84i9", influencer: "明周娛樂 MP Weekly", channel: "facebook", mentions: 5, influence: 75 },
-  { id: "n6hs95j0", influencer: "傑哥幣談", channel: "twitter", mentions: 7, influence: 82 },
-  { id: "k7it06l1", influencer: "區塊客 blockcast.it", channel: "facebook", mentions: 15, influence: 95 },
-  { id: "j8lu17m2", influencer: "Khushi Akter", channel: "linkedin", mentions: 6, influence: 68 },
-  { id: "p9ox28n3", influencer: "高欢欢", channel: "instagram", mentions: 9, influence: 88 },
+  { id: "m5gr84i9", advocate: "明周娛樂 MP Weekly", channel: "facebook", mentions: 5, influence: 75 },
+  { id: "n6hs95j0", advocate: "傑哥幣談", channel: "twitter", mentions: 7, influence: 82 },
+  { id: "k7it06l1", advocate: "區塊客 blockcast.it", channel: "facebook", mentions: 15, influence: 95 },
+  { id: "j8lu17m2", advocate: "Khushi Akter", channel: "linkedin", mentions: 6, influence: 68 },
+  { id: "p9ox28n3", advocate: "高欢欢", channel: "instagram", mentions: 9, influence: 88 },
 ]
 
 const generateChartData = () => {
@@ -48,7 +48,7 @@ const generateChartData = () => {
   return dates.map((date, index) => {
     const dataPoint = { date };
     
-    // Base values for each influencer
+    // Base values for each advocate
     const baseValues = {
       "明周娛樂 MP Weekly": 40,
       "傑哥幣談": 65,
@@ -57,29 +57,29 @@ const generateChartData = () => {
       "高欢欢": 70
     };
 
-    // Add variations for each influencer
-    Object.keys(baseValues).forEach(influencer => {
-      let value = baseValues[influencer];
+    // Add variations for each advocate
+    Object.keys(baseValues).forEach(advocate => {
+      let value = baseValues[advocate];
       
       // Add random daily variation
       const variation = Math.random() * 20 - 10;
       
       // Special handling for 區塊客 blockcast.it peak period
-      if (influencer === "區塊客 blockcast.it" && index >= 16 && index <= 20) { // Jan 17-21
+      if (advocate === "區塊客 blockcast.it" && index >= 16 && index <= 20) { // Jan 17-21
         value += 40 + Math.random() * 20; // Significant peak
       }
       
       // Keep 明周娛樂 MP Weekly generally lower
-      if (influencer === "明周娛樂 MP Weekly") {
+      if (advocate === "明周娛樂 MP Weekly") {
         value = value * 0.7; // Reduce by 30%
       }
       
       // Keep 區塊客 blockcast.it generally higher
-      if (influencer === "區塊客 blockcast.it") {
+      if (advocate === "區塊客 blockcast.it") {
         value = value * 1.2; // Increase by 20%
       }
       
-      dataPoint[influencer] = Math.max(0, Math.floor(value + variation));
+      dataPoint[advocate] = Math.max(0, Math.floor(value + variation));
     });
     
     return dataPoint;
@@ -91,9 +91,9 @@ const colors = ['#00A59A', '#006DBA', '#A253BE', '#E98227', '#EA396B'];
 
 const columns: ColumnDef<typeof data[0]>[] = [
   {
-    accessorKey: "influencer",
-    header: "Name of Influencer",
-    cell: ({ row }) => <div>{row.getValue("influencer")}</div>,
+    accessorKey: "advocate",
+    header: "Name of advocate",
+    cell: ({ row }) => <div>{row.getValue("advocate")}</div>,
   },
   {
     accessorKey: "channel",
@@ -216,7 +216,7 @@ export function WhoTab() {
       </div>
       <div className="flex items-center justify-between space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
-          Showing {table.getRowModel().rows.length} of {data.length} influencers
+          Showing {table.getRowModel().rows.length} of {data.length} advocates
         </div>
         <div className="space-x-2">
           <Button
@@ -241,9 +241,9 @@ export function WhoTab() {
         <CardHeader>
           <div className="flex justify-between items-center">
             <div>
-              <CardTitle>Top 5 Influencers by Influence</CardTitle>
+              <CardTitle>Top 5 advocates by Influence</CardTitle>
               <CardDescription>
-                Showing influence trends for the top 5 influencers over the last 30 days
+                Showing influence trends for the top 5 advocates over the last 30 days
               </CardDescription>
             </div>
             <DropdownMenu>
@@ -283,11 +283,11 @@ export function WhoTab() {
               <YAxis />
               <Tooltip />
               <Legend />
-              {data.map((influencer, index) => (
+              {data.map((advocate, index) => (
                 <Line
-                  key={influencer.id}
+                  key={advocate.id}
                   type="monotone"
-                  dataKey={influencer.influencer}
+                  dataKey={advocate.advocate}
                   stroke={colors[index]}
                   strokeWidth={2}
                   dot={false}
@@ -301,7 +301,7 @@ export function WhoTab() {
           <div className="flex w-full items-start gap-2 text-sm">
             <div className="grid gap-2">
               <div className="flex items-center gap-2 font-medium leading-none">
-                Top influencer: {data[0].influencer} <TrendingUp className="h-4 w-4" />
+                Top advocate: {data[0].advocate} <TrendingUp className="h-4 w-4" />
               </div>
               <div className="flex items-center gap-2 leading-none text-muted-foreground">
                 Notable peak during January 17-21

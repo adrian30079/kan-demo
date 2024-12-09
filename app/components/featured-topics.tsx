@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import { Input } from "@/components/ui/input"
 import { Topic } from '@/types/topic'
 import { TopicCard } from './topic-card'
@@ -17,7 +16,6 @@ interface FeaturedTopicsProps {
   onViewDetailedAnalysis: (topic: Topic) => void
   onAddForComparison: (topic: Topic) => void
   onPinTopic: (topicId: string) => void
-  onEmojiChange: (topic: Topic, emoji: string) => void
   onImageChange: (topic: Topic, imageUrl: string) => void
 }
 
@@ -32,11 +30,10 @@ export function FeaturedTopics({
   onViewDetailedAnalysis,
   onAddForComparison,
   onPinTopic,
-  onEmojiChange,
   onImageChange
 }: FeaturedTopicsProps) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 px-20 pt-8">
       <h1 className="text-3xl font-bold text-[#00857C]">Featured Topics</h1>
       <p className="text-md text-muted-foreground mb-4">
         Featured Topics are curated collections of pre-defined keywords, strategically grouped to capture comprehensive data on specific subjects of interest.
@@ -64,7 +61,6 @@ export function FeaturedTopics({
               onViewDetailedAnalysis={onViewDetailedAnalysis}
               onAddForComparison={onAddForComparison}
               onPinTopic={onPinTopic}
-              onEmojiChange={onEmojiChange}
               onImageChange={onImageChange}
             />
           </Collapsible>

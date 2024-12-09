@@ -2,12 +2,17 @@
 
 import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Area, AreaChart, Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
+import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart"
 import { Download, HelpCircle } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 const mentionsData = [
   { date: "01/Nov/2024", mentions: 12 },
@@ -119,9 +124,18 @@ export function WhenTab() {
               </Tooltip>
             </TooltipProvider>
           </CardTitle>
-          <Button variant="outline" size="icon">
-            <Download className="h-4 w-4" />
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                <Download className="h-4 w-4 mr-2" />
+                Download
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem>Download as PNG</DropdownMenuItem>
+              <DropdownMenuItem>Download as CSV</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </CardHeader>
         <CardContent className="pt-4">
           <div className="overflow-x-auto">
@@ -156,88 +170,6 @@ export function WhenTab() {
                     fillOpacity={0.2}
                   />
                 </AreaChart>
-              </ResponsiveContainer>
-            </ChartContainer>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="p-6">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            Relative Volume of Mentions
-            <TooltipProvider>
-              <Tooltip delayDuration={0}>
-                <TooltipTrigger asChild>
-                  <HelpCircle className="h-4 w-4 text-muted-foreground" />
-                </TooltipTrigger>
-                <TooltipContent className="bg-white text-black border shadow-md transition-all duration-150 ease-in-out">
-                  <p>Comparison of mention volumes across different periods</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </CardTitle>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Select period</span>
-            <Select defaultValue="week">
-              <SelectTrigger className="w-[120px]">
-                <SelectValue placeholder="Select period" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="week">By Week</SelectItem>
-                <SelectItem value="month">By Month</SelectItem>
-                <SelectItem value="year">By Year</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </CardHeader>
-        <CardContent className="pt-4">
-          <div className="overflow-x-auto">
-            <ChartContainer
-              config={{
-                week1: {
-                  label: "27/Oct/2024 - 02/Nov/2024",
-                  color: "hsl(var(--primary))",
-                },
-                week2: {
-                  label: "03/Nov/2024 - 09/Nov/2024",
-                  color: "hsl(142.1, 76.2%, 36.3%)",
-                },
-                week3: {
-                  label: "10/Nov/2024 - 16/Nov/2024",
-                  color: "hsl(47.9, 95.8%, 53.1%)",
-                },
-                week4: {
-                  label: "17/Nov/2024 - 23/Nov/2024",
-                  color: "hsl(346.8, 77.2%, 49.8%)",
-                },
-                week5: {
-                  label: "24/Nov/2024 - 30/Nov/2024",
-                  color: "hsl(199, 89%, 48%)",
-                },
-              }}
-              className="w-full h-[300px] sm:h-[400px] min-w-[600px]"
-            >
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={relativeVolumeData}>
-                  <XAxis
-                    dataKey="day"
-                    tickLine={false}
-                    axisLine={false}
-                    tickMargin={10}
-                  />
-                  <YAxis
-                    tickLine={false}
-                    axisLine={false}
-                    tickMargin={10}
-                  />
-                  <ChartTooltip />
-                  <Line type="monotone" dataKey="week1" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 4 }} />
-                  <Line type="monotone" dataKey="week2" stroke="hsl(142.1, 76.2%, 36.3%)" strokeWidth={2} dot={{ r: 4 }} />
-                  <Line type="monotone" dataKey="week3" stroke="hsl(47.9, 95.8%, 53.1%)" strokeWidth={2} dot={{ r: 4 }} />
-                  <Line type="monotone" dataKey="week4" stroke="hsl(346.8, 77.2%, 49.8%)" strokeWidth={2} dot={{ r: 4 }} />
-                  <Line type="monotone" dataKey="week5" stroke="hsl(199, 89%, 48%)" strokeWidth={2} dot={{ r: 4 }} />
-                </LineChart>
               </ResponsiveContainer>
             </ChartContainer>
           </div>

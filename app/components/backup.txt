@@ -11,5 +11,124 @@ page.tsx
 
 
 
+////Insepct tab: the top 3 cards///
+      <div className="grid gap-4 md:grid-cols-3">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Entities</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{totalEntities}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total URLs</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{totalURLs}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Groups</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{totalGroups}</div>
+          </CardContent>
+        </Card>
+      </div>
 
 
+///Inspect, the top URLs table:
+<Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>URLs by Engagement</CardTitle>
+          <div className="flex items-center space-x-2"> 
+            <Select>
+              <SelectTrigger className="w-[100px] rounded-lg">
+                <SelectValue placeholder="Top 10" />
+              </SelectTrigger>
+              <SelectContent className="rounded-xl">
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="25">25</SelectItem>
+                <SelectItem value="50">50</SelectItem>
+                <SelectItem value="100">100</SelectItem>
+                <SelectItem value="200">200</SelectItem>
+                <SelectItem value="300">300</SelectItem>
+                <SelectItem value="400">400</SelectItem>
+                <SelectItem value="500">500</SelectItem>
+                <SelectItem value="1000">1000</SelectItem>
+                <SelectItem value="1500">1500</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select>
+              <SelectTrigger className="w-[160px] rounded-lg">
+                <SelectValue placeholder="Date Range" />
+              </SelectTrigger>
+              <SelectContent className="rounded-xl">
+                <SelectItem value="7d">Last 7 days</SelectItem>
+                <SelectItem value="30d">Last 30 days</SelectItem>
+                <SelectItem value="90d">Last 3 months</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleExport(topURLs, 'urls_by_engagement')}
+            >
+              <Download className="mr-2 h-4 w-4" />
+              Export
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader className="bg-[#E9EEEE]">
+              <TableRow>
+                <TableHead className="text-[#213938]">URL</TableHead>
+                <TableHead className="text-[#213938]">Engagement Index</TableHead>
+                <TableHead className="text-[#213938]">Total Mentions</TableHead>
+                <TableHead className="text-[#213938]">Channels</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {paginatedURLs.map((post) => (
+                <TableRow 
+                  key={post.id}
+                  onClick={() => {
+                    setSelectedRow(post)
+                    setSelectedEntity(post.group)
+                    setShowOverlay(true)
+                  }}
+                  className="cursor-pointer"
+                >
+                  <TableCell className="font-medium">{post.URL}</TableCell>
+                  <TableCell>{post.engagementIndex}</TableCell>
+                  <TableCell>{post.mentions}</TableCell>
+                  <TableCell>{post.channel.split(', ').join(', ')}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <div className="flex justify-end items-center space-x-2 mt-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentURLPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentURLPage === 1}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <span>Page {currentURLPage}</span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentURLPage(prev => prev + 1)}
+              disabled={currentURLPage * itemsPerPage >= topURLs.length}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </CardContent>
+      </Card>

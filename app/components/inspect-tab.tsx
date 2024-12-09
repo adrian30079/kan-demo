@@ -7,14 +7,14 @@ import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight, Download, Plus } from 'lucide-react'
 import dataPost from './data-post.json'
 import { PostMonitoringCardsComponent } from "./post-monitoring-cards"
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import {
   ChartConfig,
-  ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
-  ChartTooltip,
-  ChartTooltipContent,
 } from "@/components/ui/chart"
 import {
   Select,
@@ -24,6 +24,10 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Bar, BarChart, ResponsiveContainer, YAxis, Cell } from "recharts"
+import { EntityTreemap } from './chart/entity-treemap'
+import { TopNERTimeChart } from './chart/top-ner-time-chart'
+import { EntityMentionsChart } from './chart/entity-mentions-chart'
+import { TopEntitiesPerformanceChart } from './chart/top-entities-performance-chart'
 
 type Post = {
   id: string
@@ -276,149 +280,53 @@ export function InspectTabComponent() {
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Entities</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalEntities}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total URLs</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalURLs}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Groups</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{totalGroups}</div>
-          </CardContent>
-        </Card>
-      </div>
+
+      <EntityMentionsChart 
+        data={topEntities}
+        timeRange={timeRange}
+        onTimeRangeChange={setTimeRange}
+      />
 
       <Card>
-        <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
-          <div className="grid flex-1 gap-1 text-center sm:text-left">
-            <CardTitle>Top 10 Entities Performance</CardTitle>
-            <CardDescription>
-              Showing engagement trends for top entities
-            </CardDescription>
-          </div>
-          <Select value={timeRange} onValueChange={setTimeRange}>
-            <SelectTrigger
-              className="w-[160px] rounded-lg sm:ml-auto"
-              aria-label="Select time range"
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>Entity Distribution Treemap</CardTitle>
+          <div className="flex flex-row items-end">
+          <Button
+              variant="outline"
+              size="sm"
+              onClick={() => console.log('Edit NER labels clicked')}
             >
-              <SelectValue placeholder="Last 30 days" />
-            </SelectTrigger>
-            <SelectContent className="rounded-xl">
-              <SelectItem value="90d">Last 3 months</SelectItem>
-              <SelectItem value="30d">Last 30 days</SelectItem>
-              <SelectItem value="7d">Last 7 days</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button variant="outline" size="sm">
-            <Download className="mr-2 h-4 w-4" />
-          </Button>
-          <Select>
-            <SelectTrigger className="w-[100px] rounded-lg">
-              <SelectValue placeholder="Top 10" />
-            </SelectTrigger>
-            <SelectContent className="rounded-xl">
-              <SelectItem value="10">Top 10</SelectItem>
-              <SelectItem value="25">Top 25</SelectItem>
-              <SelectItem value="50">Top 50</SelectItem>
-              <SelectItem value="100">Top 100</SelectItem>
-              <SelectItem value="200">Top 200</SelectItem>
-              <SelectItem value="300">Top 300</SelectItem>
-              <SelectItem value="400">Top 400</SelectItem>
-              <SelectItem value="500">Top 500</SelectItem>
-              <SelectItem value="1000">Top 1000</SelectItem>
-              <SelectItem value="1500">Top 1500</SelectItem>
-            </SelectContent>
-          </Select>
+              Edit NER labels
+            </Button>
+            <Select>
+              <SelectTrigger className="w-[150px] rounded-lg">
+                <SelectValue placeholder="NER Type" />
+              </SelectTrigger>
+              <SelectContent className="rounded-xl">
+                <SelectItem value="Entities">Entities</SelectItem>
+                <SelectItem value="Non-entities">Non-entities</SelectItem>
+              </SelectContent>
+            </Select>
+            <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                <Download className="h-6 w-4 mr-2" />
+                Download
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem>Download as PNG</DropdownMenuItem>
+              <DropdownMenuItem>Download as CSV</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          </div>
         </CardHeader>
-        <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-          <ChartContainer
-            config={dummyChartConfig}
-            className="aspect-auto h-[350px] w-full"
-          >
-            <AreaChart data={dummyChartData}>
-              <CartesianGrid vertical={false} />
-              <XAxis
-                dataKey="date"
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-                minTickGap={32}
-                tickFormatter={(value) => {
-                  const date = new Date(value)
-                  return date.toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                  })
-                }}
-              />
-              <ChartTooltip
-                cursor={false}
-                content={
-                  <ChartTooltipContent
-                    labelFormatter={(value) => {
-                      return new Date(value).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                      })
-                    }}
-                    indicator="line"
-                  />
-                }
-              />
-              {dummyEntitiesData.map(({ entity, color }) => (
-                <Area
-                  key={entity}
-                  dataKey={entity}
-                  type="monotone"
-                  stroke={color}
-                  fill={`url(#fill-${entity})`}
-                  strokeWidth={2}
-                  dot={false}
-                />
-              ))}
-              <ChartLegend content={<ChartLegendContent />} />
-              <defs>
-                {dummyEntitiesData.map(({ entity, color }) => (
-                  <linearGradient
-                    key={entity}
-                    id={`fill-${entity}`}
-                    x1="0"
-                    y1="0"
-                    x2="0"
-                    y2="1"
-                  >
-                    <stop
-                      offset="5%"
-                      stopColor={color}
-                      stopOpacity={0.1}
-                    />
-                    <stop
-                      offset="95%"
-                      stopColor={color}
-                      stopOpacity={0.01}
-                    />
-                  </linearGradient>
-                ))}
-              </defs>
-            </AreaChart>
-          </ChartContainer>
+        <CardContent>
+          <EntityTreemap data={topEntities.slice(0, 20)} />
         </CardContent>
       </Card>
+
+      <TopNERTimeChart data={data} />
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
@@ -447,16 +355,6 @@ export function InspectTabComponent() {
                 <SelectItem value="500">500</SelectItem>
                 <SelectItem value="1000">1000</SelectItem>
                 <SelectItem value="1500">1500</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select>
-              <SelectTrigger className="w-[160px] rounded-lg">
-                <SelectValue placeholder="Date Range" />
-              </SelectTrigger>
-              <SelectContent className="rounded-xl">
-                <SelectItem value="7d">Last 7 days</SelectItem>
-                <SelectItem value="30d">Last 30 days</SelectItem>
-                <SelectItem value="90d">Last 3 months</SelectItem>
               </SelectContent>
             </Select>
             <Button
@@ -523,174 +421,7 @@ export function InspectTabComponent() {
         </CardContent>
       </Card>
 
-      <Card className="mt-6">
-        <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
-          <div className="grid flex-1 gap-1 text-center sm:text-left">
-            <CardTitle>Entity Mentions - Last 7 Days</CardTitle>
-            <CardDescription>
-              Showing total mentions for top 10 entities over the past week
-            </CardDescription>
-          </div>
-          <Select value={timeRange} onValueChange={setTimeRange}>
-            <SelectTrigger
-              className="w-[160px] rounded-lg sm:ml-auto"
-              aria-label="Select time range"
-            >
-              <SelectValue placeholder="Last 7 days" />
-            </SelectTrigger>
-            <SelectContent className="rounded-xl">
-              <SelectItem value="90d">Last 3 months</SelectItem>
-              <SelectItem value="30d">Last 30 days</SelectItem>
-              <SelectItem value="7d">Last 7 days</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button variant="outline" size="sm">
-            <Download className="mr-2 h-4 w-4" />
-          </Button>
-          <Select>
-            <SelectTrigger className="w-[100px] rounded-lg">
-              <SelectValue placeholder="Top 10" />
-            </SelectTrigger>
-            <SelectContent className="rounded-xl">
-              <SelectItem value="10">Top 10</SelectItem>
-              <SelectItem value="25">Top 25</SelectItem>
-              <SelectItem value="50">Top 50</SelectItem>
-              <SelectItem value="100">Top 100</SelectItem>
-              <SelectItem value="200">Top 200</SelectItem>
-              <SelectItem value="300">Top 300</SelectItem>
-              <SelectItem value="400">Top 400</SelectItem>
-              <SelectItem value="500">Top 500</SelectItem>
-              <SelectItem value="1000">Top 1000</SelectItem>
-              <SelectItem value="1500">Top 1500</SelectItem>
-            </SelectContent>
-          </Select>
-        </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={350} style={{ paddingTop: '10px' }}>
-            <BarChart data={last7DaysBarData} layout="vertical">
-              <XAxis type="number" />
-              <YAxis 
-                type="category" 
-                dataKey="name" 
-                width={100}
-                tickFormatter={(value) => value.length > 15 ? `${value.slice(0, 15)}...` : value}
-              />
-              <Bar
-                dataKey="value"
-                radius={[4, 4, 4, 4]}
-                label={{ position: 'right', fill: '#213938' }}
-              >
-                {last7DaysBarData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-          <div className="mb-4 mt-4 flex flex-wrap gap-4">
-            {last7DaysBarData.map((entry) => (
-              <div key={entry.name} className="flex items-center gap-2">
-                <div 
-                  className="h-3 w-3 rounded-full" 
-                  style={{ backgroundColor: entry.color }}
-                />
-                <span className="text-sm">{entry.name}</span>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>URLs by Engagement</CardTitle>
-          <div className="flex items-center space-x-2"> 
-            <Select>
-              <SelectTrigger className="w-[100px] rounded-lg">
-                <SelectValue placeholder="Top 10" />
-              </SelectTrigger>
-              <SelectContent className="rounded-xl">
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="25">25</SelectItem>
-                <SelectItem value="50">50</SelectItem>
-                <SelectItem value="100">100</SelectItem>
-                <SelectItem value="200">200</SelectItem>
-                <SelectItem value="300">300</SelectItem>
-                <SelectItem value="400">400</SelectItem>
-                <SelectItem value="500">500</SelectItem>
-                <SelectItem value="1000">1000</SelectItem>
-                <SelectItem value="1500">1500</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select>
-              <SelectTrigger className="w-[160px] rounded-lg">
-                <SelectValue placeholder="Date Range" />
-              </SelectTrigger>
-              <SelectContent className="rounded-xl">
-                <SelectItem value="7d">Last 7 days</SelectItem>
-                <SelectItem value="30d">Last 30 days</SelectItem>
-                <SelectItem value="90d">Last 3 months</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleExport(topURLs, 'urls_by_engagement')}
-            >
-              <Download className="mr-2 h-4 w-4" />
-              Export
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader className="bg-[#E9EEEE]">
-              <TableRow>
-                <TableHead className="text-[#213938]">URL</TableHead>
-                <TableHead className="text-[#213938]">Engagement Index</TableHead>
-                <TableHead className="text-[#213938]">Total Mentions</TableHead>
-                <TableHead className="text-[#213938]">Channels</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {paginatedURLs.map((post) => (
-                <TableRow 
-                  key={post.id}
-                  onClick={() => {
-                    setSelectedRow(post)
-                    setSelectedEntity(post.group)
-                    setShowOverlay(true)
-                  }}
-                  className="cursor-pointer"
-                >
-                  <TableCell className="font-medium">{post.URL}</TableCell>
-                  <TableCell>{post.engagementIndex}</TableCell>
-                  <TableCell>{post.mentions}</TableCell>
-                  <TableCell>{post.channel.split(', ').join(', ')}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <div className="flex justify-end items-center space-x-2 mt-4">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCurrentURLPage(prev => Math.max(prev - 1, 1))}
-              disabled={currentURLPage === 1}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <span>Page {currentURLPage}</span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCurrentURLPage(prev => prev + 1)}
-              disabled={currentURLPage * itemsPerPage >= topURLs.length}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      
 
       {showOverlay && (
         <TableOverlay 

@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { Bell, ChevronLeft, ChevronRight, Folder, LineChart, Menu, MessageSquare, Search, Settings, Plus, Globe, LogOut } from 'lucide-react'
+
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import {
@@ -480,7 +481,7 @@ export function DashboardComponent() {
               </Button>
             )}
           </div>
-          <nav className="flex-1">
+          <nav className="flex-1 bg-[#f7fafa]">
             <ul className="space-y-1 p-2">
               {menuItems.map((item) => (
                 <li key={item.id}>
@@ -547,7 +548,7 @@ export function DashboardComponent() {
             </DropdownMenuContent>
           </DropdownMenu>
         </header>
-        <main className="flex-1 overflow-y-auto p-4 bg-white">
+        <main className="flex-1 overflow-y-auto">
           {renderMainContent()}
         </main>
       </div>

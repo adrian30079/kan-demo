@@ -87,7 +87,7 @@ export function TopicCard({
   const circumference = 2 * Math.PI * 45 // 45 is the radius
 
   return (
-    <Card key={topic.id} className="mb-4">
+    <Card key={topic.id} className="mb-4 p-4">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -181,11 +181,6 @@ export function TopicCard({
             <p className="text-2xl font-bold">{topic.engagement}</p>
           </div>
           <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <Activity className="h-4 w-4 text-gray-500" />
-              <span className="text-sm font-medium">Impact Index</span>
-            </div>
-            <p className="text-2xl font-bold">85,000</p>
           </div>
           <div className="space-y-2">
             <div className="flex items-center gap-2">
