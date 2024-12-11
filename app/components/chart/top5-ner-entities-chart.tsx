@@ -13,9 +13,16 @@ import {
 } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { DownloadIcon } from "lucide-react"
+import { DownloadIcon, Download, Settings2, Check } from "lucide-react"
 import { PostMonitoringCardsComponent } from "../post-monitoring-cards"
-import { NerEditDialog } from "../filter/ner-edit-dialog"
+import { NerEditDialog } from "../filter/edit-ner-labels"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { Checkbox } from "@/components/ui/checkbox"
 
 // Sample colors for the bars
 const colors = ['#00B1A5', '#0070AC', '#593FB6', '#DA418E', '#E66A22']
@@ -94,6 +101,11 @@ export function TopNERTimeChart({ data }: TopNERTimeChartProps) {
     })
   }, [])
 
+  const [nerTypes, setNerTypes] = useState({
+    entities: true,
+    nonEntities: true
+  })
+
   return (
     <>
       <Card>
@@ -112,11 +124,43 @@ export function TopNERTimeChart({ data }: TopNERTimeChartProps) {
               onTogglePage={handleToggleNerLabel}
               onToggleAllPages={handleToggleAllNerLabels}
             />
-            <Button variant="outline" size="sm">NER Type</Button>
-            <Button variant="outline" size="sm">
-              <DownloadIcon className="mr-2 h-4 w-4" />
-              Download
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm"
+                className="hover:border-[#00857C] hover:text-[#00857C]">
+                  <Settings2 className="mr-2 h-4 w-4" />
+                  Filter NER Type
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem
+                  onClick={() => setNerTypes(prev => ({...prev, entities: !prev.entities}))}
+                  className="flex items-center gap-2"
+                >
+                  {nerTypes.entities}
+                  Entities
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => setNerTypes(prev => ({...prev, nonEntities: !prev.nonEntities}))}
+                  className="flex items-center gap-2"
+                >
+                  {nerTypes.nonEntities}
+                  Non-entities
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="hover:border-[#00857C] hover:text-[#00857C]">
+                <DownloadIcon className="h-4 w-4 mr-2" />
+                Download
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem>Download as PNG</DropdownMenuItem>
+              <DropdownMenuItem>Download as CSV</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </CardHeader>
         <CardContent>

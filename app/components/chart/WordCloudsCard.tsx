@@ -35,7 +35,7 @@ export default function WordCloudsCard() {
                   <div className="space-y-2">
                     {["Positive", "Negative", "Mixed", "Neutral"].map((sentiment) => (
                       <div key={sentiment} className="flex items-center space-x-2">
-                        <Checkbox id={sentiment.toLowerCase()} />
+                        <Checkbox id={sentiment.toLowerCase()} className="border-2 data-[state=checked]:bg-[#00857C] data-[state=checked]:border-[#00857C] cursor-pointer" />
                         <label htmlFor={sentiment.toLowerCase()}>{sentiment}</label>
                       </div>
                     ))}

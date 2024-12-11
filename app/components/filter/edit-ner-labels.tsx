@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
+import { Tags, DownloadIcon, Download, Settings2, Check  } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -27,17 +28,11 @@ import { Loader2 } from "lucide-react"
 interface ChannelPagesDialogProps {
   channelName: string
   isDisabled: boolean
-  pages: { name: string; included: boolean }[]
-  onTogglePage: (pageName: string) => void
-  onToggleAllPages: (included: boolean) => void
 }
 
 export function NerEditDialog({
   channelName,
   isDisabled,
-  pages,
-  onTogglePage,
-  onToggleAllPages,
 }: ChannelPagesDialogProps) {
   const [open, setOpen] = useState(false)
   const [newNer, setNewNer] = useState('')
@@ -65,6 +60,7 @@ export function NerEditDialog({
           disabled={isDisabled}
           className="hover:border-[#00857C] hover:text-[#00857C]"
         >
+          <Tags className="mr-2 h-4 w-4" />
           NER Labels
         </Button>
       </DialogTrigger>
@@ -72,15 +68,14 @@ export function NerEditDialog({
         <DialogHeader>
           <DialogTitle>Manage {channelName}</DialogTitle>
           <DialogDescription>
-            Select specific pages to include or exclude.
+            Manage NER labels for this channel.
           </DialogDescription>
         </DialogHeader>
         <div className="py-4">
           <div className="flex items-center space-x-2">
             <Checkbox
               id={`selectAll-${channelName}`}
-              checked={pages.every(page => page.included)}
-              onCheckedChange={(checked) => onToggleAllPages(checked as boolean)}
+              defaultChecked={true}
               className="border-2 data-[state=checked]:bg-[#00857C] data-[state=checked]:border-[#00857C] cursor-pointer"
             />
             <Label htmlFor={`selectAll-${channelName}`} className="cursor-pointer">Select All</Label>
@@ -118,8 +113,7 @@ export function NerEditDialog({
                 <CommandItem key={label}>
                   <Checkbox
                     id={`ner-${label}`}
-                    checked={!pages.some(p => p.name === label) || pages.some(p => p.name === label && p.included)}
-                    onCheckedChange={() => onTogglePage(label)}
+                    defaultChecked={true}
                     className="border-2 data-[state=checked]:bg-[#00857C] data-[state=checked]:border-[#00857C] cursor-pointer"
                   />
                   <Label 
@@ -142,6 +136,7 @@ export function NerEditDialog({
             onClick={() => setOpen(false)}
             className="bg-[#00857C] hover:bg-[#00857C]/90"
           >
+            <Check className="mr-2 h-4 w-4" />
             Apply
           </Button>
         </div>

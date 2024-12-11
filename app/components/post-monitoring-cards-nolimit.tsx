@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { Badge } from "@/components/ui/badge"
-import { Flame, Clock, Search, Globe, Link, WandSparkles, Loader2, ArrowRight, ChevronDown, X, Plus, Image as ImageIcon, MessageSquareMore, MessageSquareText, Share2, Heart, Copy, Tag, Pin, SquareArrowOutUpRight } from 'lucide-react'
+import { Flame, Clock, Search, Globe, Link, WandSparkles, Loader2, ArrowRight, ChevronDown, X, Plus, Image as ImageIcon, MessageSquare, Share2, Heart, Copy, Tag, Pin, SquareArrowOutUpRight } from 'lucide-react'
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Input } from "@/components/ui/input"
@@ -26,9 +26,8 @@ import { PhotoGallery } from "./photo-gallery"
 import postsData from './data-post.json'
 import topicSettings from './data-topic-setting.json'
 import { Post } from "@/types/post"
-import { CommentGallery } from "./CommentGallery"
 
-export function PostMonitoringCardsComponent({ 
+export function PostMonitoringCardsComponentNoLimit({ 
   onClose,
   selectedEntity 
 }: { 
@@ -53,35 +52,10 @@ export function PostMonitoringCardsComponent({
   const [showGallery, setShowGallery] = React.useState(false)
   const [translationStates, setTranslationStates] = React.useState<{[key: string]: string | null}>({})
   const [expandedLinkIds, setExpandedLinkIds] = React.useState<Set<string>>(new Set())
-  const [showCommentGallery, setShowCommentGallery] = React.useState(false)
-  const [selectedPost, setSelectedPost] = React.useState<Post | null>(null)
 
   const sortedData = React.useMemo(() => {
     let sorted = [...postsData.posts]
     
-    if (selectedEntity) {
-      sorted = sorted.filter(post => {
-        const platformName = selectedEntity.toLowerCase();
-        
-        if (platformName === "x") {
-          return post.ner.some(entity => 
-            entity.toLowerCase() === "x" || 
-            entity.toLowerCase() === "twitter"
-          );
-        }
-        
-        if (platformName === "online forum") {
-          return post.ner.some(entity => 
-            entity.toLowerCase().includes("forum")
-          );
-        }
-        
-        return post.ner.some(entity => 
-          entity.toLowerCase().includes(platformName)
-        );
-      });
-    }
-
     if (sortKey) {
       sorted.sort((a, b) => {
         switch (sortKey) {
@@ -102,7 +76,7 @@ export function PostMonitoringCardsComponent({
       post.summary.toLowerCase().includes(searchTerm.toLowerCase()) ||
       post.fullContent.toLowerCase().includes(searchTerm.toLowerCase())
     )
-  }, [sortKey, searchTerm, selectedEntity])
+  }, [sortKey, searchTerm])
 
   const currentPosts = React.useMemo(() => {
     const indexOfLastPost = currentPage * postsPerPage
@@ -314,45 +288,23 @@ export function PostMonitoringCardsComponent({
                   </svg>
                   <span>{post.group}</span>
                   <SquareArrowOutUpRight className="h-3 w-3 text-gray-400 hover:text-gray-600" />
-                  {post.feedType === "post" && post.comment > 0 && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="text-xs ml-2"
-                      onClick={() => {
-                        setSelectedPost(post);
-                        setShowCommentGallery(true);
-                      }}
-                    >
-                      View Comments
-                    </Button>
-                  )}
                 </div>
-                <div className="flex items-center space-x-1 text-sm">
-                  <Badge variant="outline" className={`${getSentimentColor(post.sentiment as "positive" | "negative" | "neutral" | "mixed")} cursor-default text-xs border-none`}>
+                <div className="flex items-center space-x-2">
+                  <Badge className={`${getSentimentColor(post.sentiment as "positive" | "negative" | "neutral" | "mixed")} cursor-default`}>
                     {post.sentiment}
                   </Badge>
-                  <Flame className="h-4 w-4 text-red-400" />
+                  <Flame className="h-4 w-4 text-red-500" />
                   <span>{post.engagementIndex}</span>
-                  <Share2 className="h-4 w-4 text-green-400" />
+                  <MessageSquare className="h-4 w-4 text-blue-500" />
+                  <span>{post.comment}</span>
+                  <Share2 className="h-4 w-4 text-green-500" />
                   <span>{post.share}</span>
-                  <Heart className="h-4 w-4 text-red-400" />
+                  <Heart className="h-4 w-4 text-red-500" />
                   <span>{post.likes}</span>
-                  {post.feedType === "post" && (
-                    <>
-                      <MessageSquareMore className="h-4 w-4 text-blue-400" />
-                      <span>{post.comment}</span>
-                    </>
-                  )}
                 </div>
               </div>
               <div className="mt-2">
-                <div className="text-sm text-gray-500 flex items-center gap-2">
-                  {post.postDate}
-                  {post.feedType === "comment" && (
-                    <span className="italic text-gray-400 text-sm">*Comment*</span>
-                  )}
-                </div>
+                <div className="text-sm text-gray-500">{post.postDate}</div>
                 <div className="mt-1">
                   {isHighlightEnabled && highlightText ? (
                     (fullText ? post.fullContent : post.summary)
@@ -431,8 +383,7 @@ export function PostMonitoringCardsComponent({
                 {post.classifiedContent.map((content, index) => (
                   <Badge 
                     key={`classified-${index}`} 
-                    variant="outline" 
-                    className="bg-[#EDFBF9] text-[#32504C] mr-1 flex items-center space-x-1"
+                    className="bg-[#EDFBF9] text-[#32504C] border-none mr-1 flex items-center space-x-1"
                   >
                     <Tag className="h-3 w-3" />
                     <span>{content}</span>
@@ -449,23 +400,6 @@ export function PostMonitoringCardsComponent({
                 ))}
               </div>
               <div className="absolute bottom-2 right-2 flex items-center space-x-2">
-                {post.feedType === "post" && post.comment > 0 && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => {
-                      setSelectedPost(post);
-                      setShowCommentGallery(true);
-                    }}
-                  >
-                    <div className="relative">
-                      <MessageSquareText className="h-4 w-4 text-muted-foreground" />
-                      <span className="absolute -top-2 -right-2 text-xs bg-[#00857C] text-white rounded-full w-4 h-4 flex items-center justify-center">
-                        {post.comment}
-                      </span>
-                    </div>
-                  </Button>
-                )}
                 {post.imgGroup && Object.keys(post.imgGroup).length > 0 && (
                   <Button
                     variant="ghost"
@@ -523,7 +457,7 @@ export function PostMonitoringCardsComponent({
                         "text-gray-400 hover:text-gray-600",
                         translationStates[post.id] && "text-[#00857C]"
                       )}
-                      >
+                    >
                       <Globe className={cn(
                         "h-4 w-4",
                         translationStates[post.id] && "text-[#00857C]"
@@ -611,12 +545,6 @@ export function PostMonitoringCardsComponent({
         <PhotoGallery 
           images={Object.values(currentPosts[0].imgGroup || {})}
           onClose={() => setShowGallery(false)}
-        />
-      )}
-      {showCommentGallery && selectedPost && (
-        <CommentGallery 
-          post={selectedPost} 
-          onClose={() => setShowCommentGallery(false)} 
         />
       )}
     </div>

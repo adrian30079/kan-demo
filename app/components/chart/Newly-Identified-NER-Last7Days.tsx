@@ -2,7 +2,6 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Download } from 'lucide-react'
 import {
   Select,
   SelectContent,
@@ -19,6 +18,8 @@ import {
   } from "@/components/ui/dropdown-menu"
 import { useState } from 'react'
 import { PostMonitoringCardsComponent } from "../post-monitoring-cards"
+import { DownloadIcon, Download, Settings2, Check } from "lucide-react"
+import { NerEditDialog } from "../filter/edit-ner-labels"
 
 type EntityMentionsProps = {
   data: Array<{
@@ -45,6 +46,7 @@ const dummyEntitiesData = [
   { entity: "DeFi", color: "#FEE440" },
 ]
 
+
 export function EntityMentionsChart({ data, timeRange, onTimeRangeChange }: EntityMentionsProps) {
   const [showOverlay, setShowOverlay] = useState(false)
   const [selectedEntity, setSelectedEntity] = useState<string | null>(null)
@@ -65,6 +67,11 @@ export function EntityMentionsChart({ data, timeRange, onTimeRangeChange }: Enti
     setShowOverlay(true)
   }
 
+  const [nerTypes, setNerTypes] = useState({
+    entities: true,
+    nonEntities: true
+  })
+
   return (
     <Card className="mt-6">
       <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
@@ -74,27 +81,49 @@ export function EntityMentionsChart({ data, timeRange, onTimeRangeChange }: Enti
             Showing total mentions for top identified entities over the 7 days
           </CardDescription>
         </div>
-        <Select>
-          <SelectTrigger className="w-[150px] rounded-lg">
-            <SelectValue placeholder="NER Type" />
-          </SelectTrigger>
-          <SelectContent className="rounded-xl">
-            <SelectItem value="Entities">Entities</SelectItem>
-            <SelectItem value="Non-entities">Non-entities</SelectItem>
-          </SelectContent>
-        </Select>
-        <DropdownMenu>
+        <div className="flex gap-2">
+            <NerEditDialog
+              channelName="NER Labels"
+              isDisabled={false}
+            />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm"
+                className="hover:border-[#00857C] hover:text-[#00857C]">
+                  <Settings2 className="mr-2 h-4 w-4" />
+                  Filter NER Type
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem
+                  onClick={() => setNerTypes(prev => ({...prev, entities: !prev.entities}))}
+                  className="flex items-center gap-2"
+                >
+                  {nerTypes.entities}
+                  Entities
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => setNerTypes(prev => ({...prev, nonEntities: !prev.nonEntities}))}
+                  className="flex items-center gap-2"
+                >
+                  {nerTypes.nonEntities}
+                  Non-entities
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
-                <Download className="h-4 w-4 mr-2" />
+              <Button variant="outline" size="sm" className="hover:border-[#00857C] hover:text-[#00857C]">
+                <DownloadIcon className="h-4 w-4 mr-2" />
                 Download
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuItem>Download as PNG</DropdownMenuItem>
               <DropdownMenuItem>Download as CSV</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={350} style={{ paddingTop: '10px' }}>

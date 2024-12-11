@@ -1,6 +1,6 @@
 "use client"
 
-import React from 'react'
+import React, { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart"
@@ -13,6 +13,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { TableOverlayNoLimit } from './table-overlay'
 
 const mentionsData = [
   { date: "01/Nov/2024", mentions: 12 },
@@ -39,12 +40,21 @@ const relativeVolumeData = [
 ]
 
 export function WhenTab() {
+  const [showOverlay, setShowOverlay] = useState(false)
+  const [selectedDate, setSelectedDate] = useState<string | null>(null)
+
   return (
     <div className="space-y-8">
       <div>
         <h2 className="text-lg text-muted-foreground mb-6">When are the topics discussed?</h2>
         <div className="grid gap-6 grid-cols-1 md:grid-cols-3">
-          <Card className="bg-gradient-to-b from-white via-white to-[#F4FCFC]">
+          <Card 
+            className="bg-gradient-to-b from-white via-white to-[#F4FCFC] cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02]"
+            onClick={() => {
+              setSelectedDate("17-Nov-2024")
+              setShowOverlay(true)
+            }}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-base font-medium">
                 Peak Date
@@ -65,7 +75,13 @@ export function WhenTab() {
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-b from-white via-white to-[#F4FCFC]">
+          <Card 
+            className="bg-gradient-to-b from-white via-white to-[#F4FCFC] cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02]"
+            onClick={() => {
+              setSelectedDate("Monday")
+              setShowOverlay(true)
+            }}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-base font-medium">
                 Peak Day of Week
@@ -86,7 +102,13 @@ export function WhenTab() {
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-b from-white via-white to-[#F4FCFC]">
+          <Card 
+            className="bg-gradient-to-b from-white via-white to-[#F4FCFC] cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02]"
+            onClick={() => {
+              setSelectedDate("00:00 - 01:00")
+              setShowOverlay(true)
+            }}
+          >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-base font-medium">
                 Peak Hour
@@ -138,12 +160,18 @@ export function WhenTab() {
           </DropdownMenu>
         </CardHeader>
         <CardContent className="pt-4">
-          <div className="overflow-x-auto">
+          <div 
+            className="overflow-x-auto cursor-pointer" 
+            onClick={() => {
+              setSelectedDate("Overall Volume")
+              setShowOverlay(true)
+            }}
+          >
             <ChartContainer
               config={{
                 mentions: {
                   label: "Mentions",
-                  color: "hsl(24.6, 95%, 53.1%)", // Orange color matching the screenshot
+                  color: "hsl(24.6, 95%, 53.1%)",
                 },
               }}
               className="w-full h-[300px] sm:h-[400px] min-w-[600px]"
@@ -175,6 +203,16 @@ export function WhenTab() {
           </div>
         </CardContent>
       </Card>
+
+      {showOverlay && (
+        <TableOverlayNoLimit 
+          onClose={() => {
+            setShowOverlay(false)
+            setSelectedDate(null)
+          }}
+          selectedEntity={selectedDate}
+        />
+      )}
     </div>
   )
 }

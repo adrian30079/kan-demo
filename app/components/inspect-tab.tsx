@@ -4,9 +4,10 @@ import { useMemo, useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardDescription, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, Download, Plus } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Download, Plus, Settings2, DownloadIcon } from 'lucide-react'
 import dataPost from './data-post.json'
 import { PostMonitoringCardsComponent } from "./post-monitoring-cards"
+import { NerEditDialog } from "./filter/edit-ner-labels"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,11 +24,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Bar, BarChart, ResponsiveContainer, YAxis, Cell } from "recharts"
 import { EntityTreemap } from './chart/entity-treemap'
-import { TopNERTimeChart } from './chart/top-ner-time-chart'
-import { EntityMentionsChart } from './chart/entity-mentions-chart'
-import { TopEntitiesPerformanceChart } from './chart/top-entities-performance-chart'
+import { TopNERTimeChart } from './chart/top5-ner-entities-chart'
+import { EntityMentionsChart } from './chart/Newly-Identified-NER-Last7Days'
 
 type Post = {
   id: string
@@ -50,7 +49,7 @@ type Post = {
   language: string
 }
 
-function TableOverlay({ 
+export function TableOverlay({ 
   onClose, 
   selectedRow,
   selectedEntity 
@@ -92,6 +91,21 @@ function TableOverlay({
     </div>
   )
 }
+
+
+// Add handlers for NER label management
+const handleToggleNerLabel = (labelName: string) => {
+  setNerLabels(labels => 
+    labels.map(label => 
+      label.name === labelName ? { ...label, included: !label.included } : label
+    )
+  )
+}
+
+const handleToggleAllNerLabels = (included: boolean) => {
+  setNerLabels(labels => labels.map(label => ({ ...label, included })))
+}
+
 
 // Update the dummy entities data with specific colors
 const dummyEntitiesData = [
@@ -206,6 +220,13 @@ export function InspectTabComponent() {
     return topEntities.slice(0, 10).map(entity => entity.entity)
   }, [topEntities])
 
+
+  const [nerTypes, setNerTypes] = useState({
+    entities: true,
+    nonEntities: true
+  })
+
+
   // Updated dummy chart data generation with more variations
   const dummyChartData = useMemo(() => {
     const dates = Array.from({ length: 90 }).map((_, i) => {
@@ -290,35 +311,50 @@ export function InspectTabComponent() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Entity Distribution Treemap</CardTitle>
-          <div className="flex flex-row items-end">
-          <Button
-              variant="outline"
-              size="sm"
-              onClick={() => console.log('Edit NER labels clicked')}
-            >
-              Edit NER labels
-            </Button>
-            <Select>
-              <SelectTrigger className="w-[150px] rounded-lg">
-                <SelectValue placeholder="NER Type" />
-              </SelectTrigger>
-              <SelectContent className="rounded-xl">
-                <SelectItem value="Entities">Entities</SelectItem>
-                <SelectItem value="Non-entities">Non-entities</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="flex gap-2">
+            <NerEditDialog
+              channelName="NER Labels"
+              isDisabled={false}
+              onTogglePage={handleToggleNerLabel}
+              onToggleAllPages={handleToggleAllNerLabels}
+            />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm"
+                className="hover:border-[#00857C] hover:text-[#00857C]">
+                  <Settings2 className="mr-2 h-4 w-4" />
+                  Filter NER Type
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem
+                  onClick={() => setNerTypes(prev => ({...prev, entities: !prev.entities}))}
+                  className="flex items-center gap-2"
+                >
+                  {nerTypes.entities}
+                  Entities
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => setNerTypes(prev => ({...prev, nonEntities: !prev.nonEntities}))}
+                  className="flex items-center gap-2"
+                >
+                  {nerTypes.nonEntities}
+                  Non-entities
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
-                <Download className="h-6 w-4 mr-2" />
+              <Button variant="outline" size="sm" className="hover:border-[#00857C] hover:text-[#00857C]">
+                <DownloadIcon className="h-4 w-4 mr-2" />
                 Download
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuItem>Download as PNG</DropdownMenuItem>
               <DropdownMenuItem>Download as CSV</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </CardHeader>
         <CardContent>
@@ -332,14 +368,6 @@ export function InspectTabComponent() {
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Entities by mentions</CardTitle>
           <div className="flex items-center space-x-2">
-            <Button
-              variant="default"
-              size="sm"
-              className="bg-[#00857C] hover:bg-[#00857C]/90"
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Add NER
-            </Button>
             <Select>
               <SelectTrigger className="w-[100px] rounded-lg">
                 <SelectValue placeholder="Top 10" />

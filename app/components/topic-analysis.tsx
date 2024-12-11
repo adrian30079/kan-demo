@@ -1,18 +1,17 @@
 'use client'
 
 import { useState } from 'react'
-import { BarChart3, MessageSquare, Filter, Download, Settings, ChevronLeft, ArrowLeft, X } from 'lucide-react'
+import { BarChart3, MessageSquare, Filter, DownloadIcon, Download, Settings, ChevronLeft, ArrowLeft, X } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts"
+import { CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip, Line, LineChart } from "recharts"
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { TooltipProvider, Tooltip as UITooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip"
 import { RawDataComponent } from './raw-data'
 import { InspectTabComponent } from './inspect-tab'
@@ -25,25 +24,18 @@ import { QueryFilters } from './filter'
 import { DateRange } from "react-day-picker"
 import CreateNewTopicContent from './create-new-topic'
 import { useToast } from "@/components/ui/use-toast"
+import { TableOverlayNoLimit } from './table-overlay'
 
 const tabItems = ['Overview', 'What', 'When', 'Who', 'Where', 'How', 'Inspect', 'Raw Data']
 
 const chartData = [
-  { date: "Apr 1", Facebook: 200, Instagram: 100, X: 100, "Online Forum": 200 },
-  { date: "Apr 3", Facebook: 250, Instagram: 100, X: 150, "Online Forum": 150 },
-  { date: "Apr 5", Facebook: 300, Instagram: 200, X: 300, "Online Forum": 200 },
-  { date: "Apr 7", Facebook: 350, Instagram: 250, X: 300, "Online Forum": 300 },
-  { date: "Apr 9", Facebook: 300, Instagram: 200, X: 300, "Online Forum": 300 },
-  { date: "Apr 11", Facebook: 400, Instagram: 300, X: 300, "Online Forum": 300 },
-  { date: "Apr 13", Facebook: 350, Instagram: 250, X: 300, "Online Forum": 300 },
-  { date: "Apr 15", Facebook: 450, Instagram: 350, X: 300, "Online Forum": 300 },
-  { date: "Apr 17", Facebook: 400, Instagram: 300, X: 300, "Online Forum": 300 },
-  { date: "Apr 19", Facebook: 350, Instagram: 250, X: 300, "Online Forum": 300 },
-  { date: "Apr 21", Facebook: 400, Instagram: 300, X: 300, "Online Forum": 300 },
-  { date: "Apr 23", Facebook: 450, Instagram: 350, X: 300, "Online Forum": 300 },
-  { date: "Apr 25", Facebook: 400, Instagram: 300, X: 300, "Online Forum": 300 },
-  { date: "Apr 27", Facebook: 500, Instagram: 400, X: 300, "Online Forum": 300 },
-  { date: "Apr 30", Facebook: 600, Instagram: 400, X: 300, "Online Forum": 300 },
+  { date: "Mon", Facebook: 8500, Instagram: 4020, X: 2103, "Online Forum": 1004 },
+  { date: "Tue", Facebook: 7450, Instagram: 4150, X: 2130, "Online Forum": 1520 },
+  { date: "Wed", Facebook: 9020, Instagram: 5200, X: 1480, "Online Forum": 920 },
+  { date: "Thu", Facebook: 8540, Instagram: 4540, X: 2020, "Online Forum": 1650 },
+  { date: "Fri", Facebook: 9530, Instagram: 5450, X: 1290, "Online Forum": 1870 },
+  { date: "Sat", Facebook: 12000, Instagram: 6030, X: 3700, "Online Forum": 1880 },
+  { date: "Sun", Facebook: 9240, Instagram: 5230, X: 2580, "Online Forum": 1760 }
 ]
 
 const CustomTooltip = ({ active, payload, label }) => {
@@ -66,6 +58,14 @@ interface TopicAnalysisProps {
   topic: Topic;
   onBack: () => void;
   isFeaturedTopic?: boolean;
+}
+
+type ChartDataPoint = {
+  date: string;
+  Facebook: number;
+  Instagram: number;
+  X: number;
+  "Online Forum": number;
 }
 
 export function TopicAnalysisComponent({ topic, onBack, isFeaturedTopic = false }: TopicAnalysisProps) {
@@ -94,6 +94,8 @@ export function TopicAnalysisComponent({ topic, onBack, isFeaturedTopic = false 
   const [pendingFilterChanges, setPendingFilterChanges] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [showFilters, setShowFilters] = useState(false)
+  const [showOverlay, setShowOverlay] = useState(false);
+  const [selectedData, setSelectedData] = useState<any>(null);
 
   const handleExport = () => {
     // Implement export functionality here
@@ -152,8 +154,13 @@ export function TopicAnalysisComponent({ topic, onBack, isFeaturedTopic = false 
     }
   }
 
+  const handleChartClick = (data: ChartDataPoint) => {
+    setSelectedData(data);
+    setShowOverlay(true);
+  };
+
   return (
-    <div className="flex gap-6">
+    <div className="flex">
       <div className="flex-1 space-y-6 p-6 mx-20 overflow-y-auto">
         {isEditing ? (
           <CreateNewTopicContent
@@ -307,49 +314,33 @@ export function TopicAnalysisComponent({ topic, onBack, isFeaturedTopic = false 
                         </CardDescription>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Select value={timeRange} onValueChange={setTimeRange}>
-                          <SelectTrigger
-                            className="w-[160px] rounded-lg sm:ml-auto"
-                            aria-label="Select time range"
-                          >
-                            <SelectValue placeholder="Last 30 days" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="30d">Last 30 days</SelectItem>
-                            <SelectItem value="7d">Last 7 days</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <Button variant="outline" size="sm" onClick={handleExport}>
-                          <Download className="mr-2 h-4 w-4" />
-                          Export
-                        </Button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="outline" size="sm" className="hover:border-[#00857C] hover:text-[#00857C]">
+                            <DownloadIcon className="h-4 w-4 mr-2" />
+                            Download
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                          <DropdownMenuItem>Download as PNG</DropdownMenuItem>
+                          <DropdownMenuItem>Download as CSV</DropdownMenuItem>
+                          </DropdownMenuContent>
+                      </DropdownMenu>
                       </div>
                     </CardHeader>
                     <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
                       <div className="h-[350px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
-                          <AreaChart
+                          <LineChart
                             data={chartData}
                             margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                            onClick={(data) => {
+                              if (data && data.activePayload) {
+                                const clickedPoint = data.activePayload[0].payload as ChartDataPoint;
+                                handleChartClick(clickedPoint);
+                              }
+                            }}
                           >
-                            <defs>
-                              <linearGradient id="colorFacebook" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="#84E1BC" stopOpacity={0.8}/>
-                                <stop offset="95%" stopColor="#84E1BC" stopOpacity={0.1}/>
-                              </linearGradient>
-                              <linearGradient id="colorInstagram" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="#FFA69E" stopOpacity={0.8}/>
-                                <stop offset="95%" stopColor="#FFA69E" stopOpacity={0.1}/>
-                              </linearGradient>
-                              <linearGradient id="colorX" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="#93A5CF" stopOpacity={0.8}/>
-                                <stop offset="95%" stopColor="#93A5CF" stopOpacity={0.1}/>
-                              </linearGradient>
-                              <linearGradient id="colorOnlineForum" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="#FFE5B4" stopOpacity={0.8}/>
-                                <stop offset="95%" stopColor="#FFE5B4" stopOpacity={0.1}/>
-                              </linearGradient>
-                            </defs>
                             <CartesianGrid strokeDasharray="3 3" vertical={false} />
                             <XAxis 
                               dataKey="date" 
@@ -367,35 +358,39 @@ export function TopicAnalysisComponent({ topic, onBack, isFeaturedTopic = false 
                               stroke="#94a3b8"
                             />
                             <Tooltip content={<CustomTooltip />} />
-                            <Area
+                            <Line
                               type="monotone"
                               dataKey="Facebook"
-                              stackId="1"
-                              stroke="#84E1BC"
-                              fill="url(#colorFacebook)"
+                              stroke="#0A83C4"
+                              strokeWidth={2}
+                              style={{ cursor: 'pointer' }}
+                              activeDot={{ r: 8, style: { cursor: 'pointer' } }}
                             />
-                            <Area
+                            <Line
                               type="monotone"
                               dataKey="Instagram"
-                              stackId="1"
-                              stroke="#FFA69E"
-                              fill="url(#colorInstagram)"
+                              stroke="#E3559C"
+                              strokeWidth={2}
+                              style={{ cursor: 'pointer' }}
+                              activeDot={{ r: 8, style: { cursor: 'pointer' } }}
                             />
-                            <Area
+                            <Line
                               type="monotone"
                               dataKey="X"
-                              stackId="1"
-                              stroke="#93A5CF"
-                              fill="url(#colorX)"
+                              stroke="#725ACC"
+                              strokeWidth={2}
+                              style={{ cursor: 'pointer' }}
+                              activeDot={{ r: 8, style: { cursor: 'pointer' } }}
                             />
-                            <Area
+                            <Line
                               type="monotone"
                               dataKey="Online Forum"
-                              stackId="1"
-                              stroke="#FFE5B4"
-                              fill="url(#colorOnlineForum)"
+                              stroke="#00B1A5"
+                              strokeWidth={2}
+                              style={{ cursor: 'pointer' }}
+                              activeDot={{ r: 8, style: { cursor: 'pointer' } }}
                             />
-                          </AreaChart>
+                          </LineChart>
                         </ResponsiveContainer>
                       </div>
                     </CardContent>
@@ -465,6 +460,13 @@ export function TopicAnalysisComponent({ topic, onBack, isFeaturedTopic = false 
             />
           </CardContent>
         </Card>
+      )}
+
+      {showOverlay && (
+        <TableOverlayNoLimit
+          onClose={() => setShowOverlay(false)}
+          selectedRow={selectedData}
+        />
       )}
     </div>
   )
