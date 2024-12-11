@@ -33,7 +33,7 @@ export function OwnTopics({
   completedActions,
 }: OwnTopicsProps) {
   return (
-    <div className="space-y-6 px-20 pt-8">
+    <div className="space-y-6 p-6">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Own Topics</h1>
       </div>

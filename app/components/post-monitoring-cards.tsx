@@ -449,23 +449,6 @@ export function PostMonitoringCardsComponent({
                 ))}
               </div>
               <div className="absolute bottom-2 right-2 flex items-center space-x-2">
-                {post.feedType === "post" && post.comment > 0 && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => {
-                      setSelectedPost(post);
-                      setShowCommentGallery(true);
-                    }}
-                  >
-                    <div className="relative">
-                      <MessageSquareText className="h-4 w-4 text-muted-foreground" />
-                      <span className="absolute -top-2 -right-2 text-xs bg-[#00857C] text-white rounded-full w-4 h-4 flex items-center justify-center">
-                        {post.comment}
-                      </span>
-                    </div>
-                  </Button>
-                )}
                 {post.imgGroup && Object.keys(post.imgGroup).length > 0 && (
                   <Button
                     variant="ghost"

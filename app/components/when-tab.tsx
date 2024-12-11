@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
+import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, LineChart, Line } from "recharts"
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart"
 import { Download, HelpCircle } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -16,17 +16,13 @@ import {
 import { TableOverlayNoLimit } from './table-overlay'
 
 const mentionsData = [
-  { date: "01/Nov/2024", mentions: 12 },
-  { date: "03/Nov/2024", mentions: 2 },
-  { date: "05/Nov/2024", mentions: 6 },
-  { date: "07/Nov/2024", mentions: 14 },
-  { date: "09/Nov/2024", mentions: 7 },
-  { date: "11/Nov/2024", mentions: 25 },
-  { date: "13/Nov/2024", mentions: 10 },
-  { date: "15/Nov/2024", mentions: 7 },
-  { date: "17/Nov/2024", mentions: 33 },
-  { date: "19/Nov/2024", mentions: 8 },
-  { date: "21/Nov/2024", mentions: 15 },
+  { date: "01/Nov/2024", mentions: 1422 },
+  { date: "02/Nov/2024", mentions: 2512 },
+  { date: "03/Nov/2024", mentions: 924 },
+  { date: "04/Nov/2024", mentions: 1514 },
+  { date: "05/Nov/2024", mentions: 1127 },
+  { date: "06/Nov/2024", mentions: 2025 },
+  { date: "07/Nov/2024", mentions: 1020 },
 ]
 
 const relativeVolumeData = [
@@ -177,7 +173,7 @@ export function WhenTab() {
               className="w-full h-[300px] sm:h-[400px] min-w-[600px]"
             >
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={mentionsData}>
+                <LineChart data={mentionsData}>
                   <XAxis
                     dataKey="date"
                     tickLine={false}
@@ -190,14 +186,13 @@ export function WhenTab() {
                     tickMargin={10}
                   />
                   <ChartTooltip />
-                  <Area
+                  <Line
                     type="monotone"
                     dataKey="mentions"
                     stroke="hsl(24.6, 95%, 53.1%)"
-                    fill="hsl(24.6, 95%, 53.1%)"
-                    fillOpacity={0.2}
+                    strokeWidth={2}
                   />
-                </AreaChart>
+                </LineChart>
               </ResponsiveContainer>
             </ChartContainer>
           </div>

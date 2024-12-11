@@ -38,7 +38,7 @@ export function FeaturedTopics({
       <p className="text-md text-muted-foreground mb-4">
         Featured Topics are curated collections of pre-defined keywords, strategically grouped to capture comprehensive data on specific subjects of interest.
       </p>
-      <div className="mb-4">
+      <div className="mb-4 bg-white">
         <Input
           type="text"
           placeholder="Search topics..."

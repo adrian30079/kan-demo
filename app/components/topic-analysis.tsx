@@ -25,6 +25,7 @@ import { DateRange } from "react-day-picker"
 import CreateNewTopicContent from './create-new-topic'
 import { useToast } from "@/components/ui/use-toast"
 import { TableOverlayNoLimit } from './table-overlay'
+import { Topic } from '@/types/index'
 
 const tabItems = ['Overview', 'What', 'When', 'Who', 'Where', 'How', 'Inspect', 'Raw Data']
 
@@ -93,7 +94,7 @@ export function TopicAnalysisComponent({ topic, onBack, isFeaturedTopic = false 
   const [channels] = useState<any[]>([]) // Add your channels data here
   const [pendingFilterChanges, setPendingFilterChanges] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
-  const [showFilters, setShowFilters] = useState(false)
+  const [showFilters, setShowFilters] = useState(true)
   const [showOverlay, setShowOverlay] = useState(false);
   const [selectedData, setSelectedData] = useState<any>(null);
 
@@ -161,7 +162,7 @@ export function TopicAnalysisComponent({ topic, onBack, isFeaturedTopic = false 
 
   return (
     <div className="flex">
-      <div className="flex-1 space-y-6 p-6 mx-20 overflow-y-auto">
+      <div className="flex-1 space-y-6 p-6 mx-12 overflow-y-auto">
         {isEditing ? (
           <CreateNewTopicContent
             onBack={() => setIsEditing(false)}
@@ -175,18 +176,21 @@ export function TopicAnalysisComponent({ topic, onBack, isFeaturedTopic = false 
           />
         ) : (
           <div className="space-y-6">
-            <div className="sticky top-0 z-10 py-4">
+            <div className="sticky top-0 z-10 py-2">
               <div className="flex justify-between items-center">
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
                   <Button 
                     variant="ghost" 
                     onClick={onBack}
                     className="hover:bg-[#E9EEEE] hover:text-[#00857C]"
                   >
-                    <ChevronLeft className="h-4 w-4 mr-2" />
+                    <ChevronLeft className="h-4 w-3 mr-1" />
                     Back
                   </Button>
-                  <h1 className="text-3xl font-bold">{topic.name}</h1>
+                  <div className="flex flex-col gap-1">
+                    <h1 className="text-3xl font-bold text-[#00857C]">{topic.name}</h1>
+                    <p className="text-xs text-gray-500">From 1 Apr 2024 to 20 Apr 2024</p>
+                  </div>
                 </div>
                 <div className="flex gap-2">
                   <Button 
@@ -220,7 +224,7 @@ export function TopicAnalysisComponent({ topic, onBack, isFeaturedTopic = false 
               </div>
             </div>
             <Tabs defaultValue="Overview" className="w-full">
-              <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8">
+              <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8 bg-[#F3F6F7]">
                 {tabItems.map((tab) => (
                   <TabsTrigger key={tab} value={tab} onClick={() => setActiveTab(tab)}>{tab}</TabsTrigger>
                 ))}
@@ -431,7 +435,7 @@ export function TopicAnalysisComponent({ topic, onBack, isFeaturedTopic = false 
       </div>
 
       {showFilters && (
-        <Card className="h-fill w-[320px] border bg-white rounded-none relative">
+        <Card className="h-fill w-[260px] border bg-white rounded-none relative">
           <Button
             variant="ghost"
             size="icon"

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { PostMonitoringCardsComponentNoLimit } from "./post-monitoring-cards-nolimit"
+import { PostMonitoringCardsComponent3 } from "./post-monitoring-cards-all"
 
 type Post = {
   id: string
@@ -58,7 +58,7 @@ export function TableOverlayNoLimit({
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        <PostMonitoringCardsComponentNoLimit 
+        <PostMonitoringCardsComponent3 
           onClose={handleClose} 
           selectedEntity={selectedEntity}
         />

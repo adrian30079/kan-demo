@@ -25,7 +25,8 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog"
 import { useToast } from "@/components/ui/use-toast"
-import { ChannelPagesDialog } from "@/components/filter/channel-pages-dialog"
+import { ChannerlManage } from "@/components/filter/channelManage"
+import { DatePickerWithRange } from "@/components/date-picker-with-range"
 
 interface KeywordGroup {
   id: string
@@ -60,26 +61,16 @@ interface Topic {
 }
 
 const dummyPages = [
-  "加密貨幣新聞",
-  "區塊鏈技術",
-  "Bitcoin Discussion",
-  "虛擬資產投資",
-  "比特幣討論區",
-  "Ethereum Enthusiasts",
-  "Crypto Market Analysis",
-  "以太坊愛好者",
-  "加密貨幣市場分析",
-  "區塊鏈應用",
-  "加密貨幣交易策略",
-  "Crypto News",
-  "Blockchain Technology",
-  "Virtual Asset Investment",
-  "Blockchain Applications",
-  "Crypto Trading Strategies",
-  "加密貨幣交易策略",
-  "虛擬貨幣趨勢",
-  "Virtual Currency Trends",
-  "Crypto Mining"
+  "Mary's Investment Diary",
+  "Tech Trends Today",
+  "Eco-Friendly Living",
+  "Gourmet Recipes Hub",
+  "Fitness Journey Log",
+  "Travel Adventures Blog",
+  "DIY Home Improvement",
+  "Parenting Tips & Tricks",
+  "Book Lovers' Corner",
+  "Local Events Spotlight"
 ]
 
 export default function CreateNewTopicContent({ onBack, existingTopics, onSave, editingTopic, onDelete, isFeaturedTopic = false }: CreateNewTopicContentProps) {
@@ -498,8 +489,8 @@ export default function CreateNewTopicContent({ onBack, existingTopics, onSave, 
   }
 
   return (
-    <div className="space-y-6 p-6 bg-white overflow-y-auto">
-      <div className="sticky top-0 bg-white z-10 py-4">
+    <div className="space-y-2 p-2 overflow-y-auto">
+      <div className="sticky top-0 z-10 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
             <Button variant="ghost" onClick={onBack} className="hover:bg-[#E9EEEE] hover:text-[#00857C]">
@@ -528,9 +519,110 @@ export default function CreateNewTopicContent({ onBack, existingTopics, onSave, 
                   value={topicName}
                   onChange={(e) => setTopicName(e.target.value)}
                   disabled={isFeaturedTopic}
+                  className="bg-gray-50"
                 />
               </div>
-              {/* ... other general settings with disabled={isFeaturedTopic} ... */}
+              
+              {/* Add DatePickerWithRange */}
+              <div>
+                <Label>Data Collection Period</Label>
+                <DatePickerWithRange
+                  date={{
+                    from: new Date(startDate),
+                    to: new Date(endDate)
+                  }}
+                  onDateChange={(range) => {
+                    if (range?.from) {
+                      setStartDate(range.from.toISOString().split('T')[0])
+                    }
+                    if (range?.to) {
+                      setEndDate(range.to.toISOString().split('T')[0])
+                    }
+                  }}
+                  presets={
+                    <div className="space-y-2 gap-2 flex flex-col">
+                      <Button
+                        variant="ghost"
+                        className="text-sm border"
+                        onClick={() => {
+                          const today = new Date()
+                          const lastWeek = new Date(today)
+                          lastWeek.setDate(today.getDate() - 7)
+                          setStartDate(lastWeek.toISOString().split('T')[0])
+                          setEndDate(today.toISOString().split('T')[0])
+                        }}
+                      >
+                        Last 7 days
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        className="text-sm border"
+                        onClick={() => {
+                          const today = new Date()
+                          const last14Days = new Date(today)
+                          last14Days.setDate(today.getDate() - 14)
+                          setStartDate(last14Days.toISOString().split('T')[0])
+                          setEndDate(today.toISOString().split('T')[0])
+                        }}
+                      >
+                        Last 14 days
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        className="text-sm border"
+                        onClick={() => {
+                          const today = new Date()
+                          const lastMonth = new Date(today)
+                          lastMonth.setMonth(today.getMonth() - 1)
+                          setStartDate(lastMonth.toISOString().split('T')[0])
+                          setEndDate(today.toISOString().split('T')[0])
+                        }}
+                      >
+                        Last 30 days
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        className="text-sm border"
+                        onClick={() => {
+                          const today = new Date()
+                          const last3Months = new Date(today)
+                          last3Months.setMonth(today.getMonth() - 3)
+                          setStartDate(last3Months.toISOString().split('T')[0])
+                          setEndDate(today.toISOString().split('T')[0])
+                        }}
+                      >
+                        Last 3 months
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        className="text-sm border"
+                        onClick={() => {
+                          const today = new Date()
+                          const last6Months = new Date(today)
+                          last6Months.setMonth(today.getMonth() - 6)
+                          setStartDate(last6Months.toISOString().split('T')[0])
+                          setEndDate(today.toISOString().split('T')[0])
+                        }}
+                      >
+                        Last 6 months
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        className="text-sm border"
+                        onClick={() => {
+                          const today = new Date()
+                          const lastYear = new Date(today)
+                          lastYear.setFullYear(today.getFullYear() - 1)
+                          setStartDate(lastYear.toISOString().split('T')[0])
+                          setEndDate(today.toISOString().split('T')[0])
+                        }}
+                      >
+                        Last 1 year
+                      </Button>
+                    </div>
+                  }
+                />
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -623,12 +715,12 @@ export default function CreateNewTopicContent({ onBack, existingTopics, onSave, 
                               <span className="text-sm text-muted-foreground w-6 pt-2">
                                 {groupIndex + 1}:
                               </span>
-                              <div className="flex-1">
+                              <div className="flex-1 bg-gray-50">
                                 <div className="flex flex-wrap gap-2 p-2 border rounded-md min-h-[40px]">
                                   {group.keywords.map((keyword, keywordIndex) => (
                                     <div
                                       key={keywordIndex}
-                                      className="flex items-center bg-muted text-muted-foreground px-2 py-1"
+                                      className="flex items-center bg-gray-200 text-gray-700 px-2 py-1"
                                     >
                                       <span>{keyword}</span>
                                       <Button
@@ -649,7 +741,7 @@ export default function CreateNewTopicContent({ onBack, existingTopics, onSave, 
                                       }))
                                     }
                                     onKeyDown={(e) => handleKeywordInput('inclusion', group.id, e)}
-                                    className="border-none shadow-none focus-visible:ring-0 flex-1 min-w-[200px]"
+                                    className="border-none shadow-none focus-visible:ring-0 flex-1 min-w-[200px] bg-gray-50"
                                     placeholder="Enter OR combinations here; press 'Enter' to split"
                                   />
                                 </div>
@@ -720,7 +812,7 @@ export default function CreateNewTopicContent({ onBack, existingTopics, onSave, 
                               <span className="text-sm text-muted-foreground w-6 pt-2">
                                 {groupIndex + 1}:
                               </span>
-                              <div className="flex-1">
+                              <div className="flex-1 bg-gray-50">
                                 <div className="flex flex-wrap gap-2 p-2 border rounded-md min-h-[40px]">
                                   {group.keywords.map((keyword, keywordIndex) => (
                                     <div
@@ -747,7 +839,7 @@ export default function CreateNewTopicContent({ onBack, existingTopics, onSave, 
                                       }))
                                     }
                                     onKeyDown={(e) => handleKeywordInput('exclusion', group.id, e)}
-                                    className="border-none shadow-none focus-visible:ring-0 flex-1 min-w-[200px]"
+                                    className="border-none shadow-none focus-visible:ring-0 flex-1 min-w-[200px] bg-gray-50"
                                     placeholder="Enter OR combinations here; press 'Enter' to split"
                                   />
                                 </div>
@@ -828,6 +920,7 @@ export default function CreateNewTopicContent({ onBack, existingTopics, onSave, 
                   id="select-all-channels"
                   checked={selectAllChannels}
                   onCheckedChange={toggleAllChannels}
+                  className="border-2 data-[state=checked]:bg-[#00857C] data-[state=checked]:border-[#00857C] cursor-pointer"
                 />
                 <Label htmlFor="select-all-channels">Select All</Label>
               </div>
@@ -841,6 +934,7 @@ export default function CreateNewTopicContent({ onBack, existingTopics, onSave, 
                     <Checkbox
                       id={`channel-${channel.name}`}
                       checked={channel.included}
+                      className="border-2 data-[state=checked]:bg-[#00857C] data-[state=checked]:border-[#00857C] cursor-pointer"
                       onCheckedChange={(checked) => {
                         toggleChannelInclusion(channel.name)
                         if (checked === false) {
@@ -852,12 +946,9 @@ export default function CreateNewTopicContent({ onBack, existingTopics, onSave, 
                     />
                     <Label htmlFor={`channel-${channel.name}`}>{channel.name}</Label>
                   </div>
-                  <ChannelPagesDialog
+                  <ChannerlManage 
                     channelName={channel.name}
                     isDisabled={!channel.included}
-                    pages={channel.pages}
-                    onTogglePage={(pageName) => togglePageInclusion(channel.name, pageName)}
-                    onToggleAllPages={(included) => toggleAllPages(channel.name, included)}
                   />
                 </div>
               ))}

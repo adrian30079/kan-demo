@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Info, DownloadIcon } from 'lucide-react'
 import { TableOverlayNoLimit } from './table-overlay'
-import { CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip as RechartsTooltip, Line, LineChart } from "recharts"
+import { CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip as RechartsTooltip, BarChart, Bar, Legend } from "recharts"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
+import { OverallVolumeOfMentions } from "@/components/chart/Overall-Volume-of-Mentions"
 
 // Calculate platform data from posts
 const calculatePlatformData = () => {
@@ -142,63 +143,7 @@ export function WhereTabComponent() {
         ))}
       </div>
 
-      <Card className="mt-6">
-        <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
-          <div className="grid flex-1 gap-1 text-center sm:text-left">
-            <CardTitle>Overall Volume of Mentions</CardTitle>
-            <CardDescription>
-              Showing mentions across different platforms
-            </CardDescription>
-          </div>
-          <div className="flex items-center gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="hover:border-[#00857C] hover:text-[#00857C]">
-                  <DownloadIcon className="h-4 w-4 mr-2" />
-                  Download
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem>Download as PNG</DropdownMenuItem>
-                <DropdownMenuItem>Download as CSV</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </CardHeader>
-        <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-          <div className="h-[350px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart
-                data={chartData}
-                margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-                onClick={handleChartClick}
-              >
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis 
-                  dataKey="date" 
-                  axisLine={false}
-                  tickLine={false}
-                  tickMargin={10}
-                  fontSize={12}
-                  stroke="#94a3b8"
-                />
-                <YAxis 
-                  axisLine={false}
-                  tickLine={false}
-                  tickMargin={10}
-                  fontSize={12}
-                  stroke="#94a3b8"
-                />
-                <RechartsTooltip content={<CustomTooltip />} />
-                <Line type="monotone" dataKey="Facebook" stroke="#0A83C4" strokeWidth={2} activeDot={{ r: 8 }} />
-                <Line type="monotone" dataKey="Instagram" stroke="#E3559C" strokeWidth={2} activeDot={{ r: 8 }} />
-                <Line type="monotone" dataKey="X" stroke="#725ACC" strokeWidth={2} activeDot={{ r: 8 }} />
-                <Line type="monotone" dataKey="Online Forum" stroke="#00B1A5" strokeWidth={2} activeDot={{ r: 8 }} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </CardContent>
-      </Card>
+      <OverallVolumeOfMentions />
 
       {showTable && (
         <TableOverlayNoLimit

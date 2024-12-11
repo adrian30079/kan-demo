@@ -23,7 +23,8 @@ export function DatePickerWithRange({
   className,
   date,
   onDateChange,
-}: DatePickerWithRangeProps) {
+  presets,
+}: DatePickerWithRangeProps & { presets?: React.ReactNode }) {
   return (
     <div className={cn("grid gap-2", className)}>
       <Popover>
@@ -51,7 +52,10 @@ export function DatePickerWithRange({
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
+        <PopoverContent className="w-auto p-0 flex" align="start">
+          <div className="border-r p-2 flex flex-col">
+            {presets}
+          </div>
           <Calendar
             initialFocus
             mode="range"

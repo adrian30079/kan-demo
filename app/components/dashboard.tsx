@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { Bell, ChevronLeft, ChevronRight, Folder, LineChart, Menu, MessageSquare, Search, Settings, Plus, Globe, LogOut } from 'lucide-react'
+import { Bell, ChevronLeft, ChevronRight, House, User, Folder, LineChart, Menu, MessageSquare, Search, Settings, Plus, Globe, LogOut } from 'lucide-react'
 
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -16,13 +16,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import CreateNewTopicContent from './create-new-topic'
 import { TopicAnalysisComponent } from './topic-analysis'
 import { FeaturedTopics } from './featured-topics'
 import featuredTopicsData from '@/data/featured-topics.json'
 import { TopicCard } from './topic-card'
 import QueryContent from './query-content'
 import { Topic } from '@/types/topic'
+import { ManagerMentionsCard } from './manager-mentions'
 
 type MenuItem = {
   icon: React.ElementType;
@@ -64,8 +64,8 @@ export function DashboardComponent() {
   const menuItems: MenuItem[] = [
     { icon: MessageSquare, name: 'Featured Topics', id: 'featured-topics' },
     { icon: Folder, name: 'Own Topics', id: 'own-topics' },
-    { icon: LineChart, name: 'Comparison', id: 'comparison' },
-    { icon: Search, name: 'Query', id: 'query' },
+    // { icon: LineChart, name: 'Comparison', id: 'comparison' },
+    // { icon: Search, name: 'Query', id: 'query' },
     { icon: Bell, name: 'Alerts', id: 'alerts' },
   ]
 
@@ -254,7 +254,7 @@ export function DashboardComponent() {
       )
     }
 
-    const contentClass = "space-y-6 p-6 bg-white overflow-y-auto";
+    const contentClass = "space-y-6 p-6 overflow-y-auto";
 
     switch (activeTab) {
       case 'featured-topics':
@@ -292,24 +292,25 @@ export function DashboardComponent() {
                 );
               }}
             />
+            <ManagerMentionsCard />
           </div>
         )
       case 'own-topics':
         return (
           <div className={contentClass}>
-            <div className="space-y-6">
+            <div className="space-y-6 px-20 pt-8">
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold text-[#00857C]">Own Topics</h2>
                 <p className="text-muted-foreground text-md">
                 Manage your own topics here. You can create new topics or view topics you've duplicated from Featured Topics.
                 </p>
               </div>
-              <div className="flex gap-4">
+              <div className="flex gap-4 bg-white">
                 <Input
                   placeholder="Search topics..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="max-w-xs"
+                  className="max-w-xs bg-white"
                 />
               </div>
               {ownTopics.length > 0 ? (
@@ -460,13 +461,12 @@ export function DashboardComponent() {
 
   return (
     <div className="grid h-screen w-full lg:grid-cols-[auto_1fr]">
-      <aside className={`${isExpanded ? 'w-64' : 'w-16'} hidden border-r bg-white transition-all duration-300 ease-in-out lg:block min-w-[4rem] h-screen overflow-hidden`}>
-        <div className="flex h-full flex-col">
-          <div className="flex h-14 items-center border-b px-4">
-            {isExpanded && (
-              <Button
-                variant="ghost"
-                className="flex items-center font-semibold w-full justify-start hover:text-[#00857C]"
+      <aside className={`${isExpanded ? 'w-56' : 'w-16'} hidden bg-white transition-all duration-300 ease-in-out lg:block min-w-[4rem] h-screen overflow-visible`}>
+        <div className="flex h-full flex-col overflow-visible">
+          <div className="flex h-14 items-center px-4 pl-4 border-b overflow-visible">
+
+              <div
+                className="flex items-center font-semibold justify-start overflow-visible"
                 onClick={() => setActiveTab('featured-topics')}
               >
                 <div className="relative h-10 w-10 py-2">
@@ -477,11 +477,14 @@ export function DashboardComponent() {
                     className="object-contain w-full h-full"
                   />
                 </div>
-                <span className="text-lg text-[#00857C]">Sensor</span>
-              </Button>
-            )}
+                <span className="text-lg text-[#00857C] tracking-tight whitespace-nowrap flex-shrink-0">SENSOR</span>
+                <div className="mx-1 border-r ml-3 h-[28px] w-1"/>
+                {isExpanded && (
+                <span className="pl-2 text-sm text-[#9BB5B1] truncate font-light">Suspicious Fraudulent Activities Detection in Social Media Monitoring</span>
+              )}
+              </div>
           </div>
-          <nav className="flex-1 bg-[#f7fafa]">
+          <nav className="flex-1 bg-[#f7fafa] border-r pt-2 flex flex-col justify-between">
             <ul className="space-y-1 p-2">
               {menuItems.map((item) => (
                 <li key={item.id}>
@@ -500,8 +503,11 @@ export function DashboardComponent() {
                 </li>
               ))}
             </ul>
+            <div className="relative px-3 py-2 text-[10px] text-gray-400 w-full overflow-hidden text-ellipsis">
+              {isExpanded && "SENSOR prototype v1.0 data and content are for referencing usage."}
+            </div>
           </nav>
-          <div className="flex h-14 items-center justify-end border-t px-4">
+          <div className="flex h-14 items-center justify-end border-t px-4 border-r ">
             <Button
               variant="ghost"
               size="icon"
@@ -514,7 +520,7 @@ export function DashboardComponent() {
         </div>
       </aside>
       <div className="flex flex-col h-screen overflow-hidden">
-        <header className="flex h-14 items-center justify-end gap-4 border-b bg-white px-6">
+        <header className="flex h-14 items-center justify-end gap-3 border-b px-6">
           <Button
             variant="ghost"
             size="icon"
@@ -523,17 +529,19 @@ export function DashboardComponent() {
             <Menu className="h-6 w-6" />
             <span className="sr-only">Toggle menu</span>
           </Button>
-          <Button 
+          {/* <Button 
             onClick={() => setShowCreateNewTopic(true)} 
             className="bg-[#00857C] text-white hover:bg-[#007a73]"
           >
             <Plus className="mr-2 h-4 w-4" /> Create New Topic
-          </Button>
+          </Button> */}
+          <div className="pl-2 text-sm text-gray-700 ml-2 truncate font-light">U0051 IS</div>
+          <div className="inline-flex items-center rounded-full bg-gray-400 px-3 py-1 text-xs text-white">Manager 2</div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="text-[#576968]">
-                <Settings className="h-8 w-8" />
-                <span className="sr-only">Settings</span>
+              <Button variant="ghost" size="icon" className="text-[#576968] bg-gray-100 border-gray-200 hover:text-[#00857C]  hover:bg-[#C8DEDB]">
+                <User className="h-8 w-8" />
+                <span className="sr-only">User</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -548,7 +556,7 @@ export function DashboardComponent() {
             </DropdownMenuContent>
           </DropdownMenu>
         </header>
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto bg-[#FDFDFD]">
           {renderMainContent()}
         </main>
       </div>

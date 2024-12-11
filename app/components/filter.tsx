@@ -12,17 +12,12 @@ import {
 import { DatePickerWithRange } from "@/components/date-picker-with-range"
 import { DateRange } from "react-day-picker"
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Switch } from "@/components/ui/switch"
+import { ChannerlManage } from "./filter/channelManage"
 
 interface Channel {
   name: string;
@@ -78,7 +73,8 @@ export function QueryFilters({
   const dummyChannels = [
     { name: "Facebook", included: true, pages: [{ name: "Page 1", included: true }, { name: "Page 2", included: true }] },
     { name: "Instagram", included: true, pages: [{ name: "Account 1", included: true }, { name: "Account 2", included: true }] },
-    { name: "Twitter", included: true, pages: [{ name: "Handle 1", included: true }, { name: "Handle 2", included: true }] },
+    { name: "X", included: true, pages: [{ name: "Handle 1", included: true }, { name: "Handle 2", included: true }] },
+    { name: "LIHKG", included: true, pages: [{ name: "Handle 1", included: true }, { name: "Handle 2", included: true }] },
   ];
 
   const handleClassifiedContentChange = (field: string) => (checked: boolean) => {
@@ -100,37 +96,57 @@ export function QueryFilters({
     <div className="p-2 space-y-6 rounded-xl">
       {/* Date Range Section */}
       <div className="space-y-2">
-        <Label className="text-md font-bold">Date Range</Label>
-        <div className="flex gap-2 mb-2">
-          <Button 
-            variant="outline" 
-            size="sm"
-            className={filterPanel.dateRange?.from === undefined ? "bg-[#00857C] text-white hover:bg-[#00857C]/90" : ""}
-          >
-            Last 7 days
-          </Button>
-          <Button 
-            variant="outline"
-            size="sm"
-          >
-            Last 14 days
-          </Button>
-          <Button 
-            variant="outline"
-            size="sm"
-          >
-            Last 30 days
-          </Button>
-        </div>
+        <Label className="text-sm font-medium">Date Range</Label>
         <DatePickerWithRange
           date={filterPanel.dateRange}
           onDateChange={(date) => onFilterChange('dateRange', date)}
+          presets={
+            <div className="flex flex-col gap-2 mb-2">
+              <Button 
+                variant="outline" 
+                size="sm"
+                className={filterPanel.dateRange?.from === undefined ? "bg-[#00857C] text-white hover:bg-[#00857C]/90" : ""}
+              >
+                Last 7 days
+              </Button>
+              <Button 
+                variant="outline"
+                size="sm"
+              >
+                Last 14 days
+              </Button>
+              <Button 
+                variant="outline"
+                size="sm"
+              >
+                Last 30 days
+              </Button>
+              <Button 
+                variant="outline"
+                size="sm"
+              >
+                Last 3 months
+              </Button>
+              <Button 
+                variant="outline"
+                size="sm"
+              >
+                Last 6 months
+              </Button>
+              <Button 
+                variant="outline"
+                size="sm"
+              >
+                Last 1 year
+              </Button>
+            </div>
+          }
         />
       </div>
 
       {/* Classified Content Dropdown */}
       <div className="space-y-2">
-        <Label className="text-md font-bold">Classified Content</Label>
+        <Label className="text-sm font-medium">Classified Content</Label>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button 
@@ -181,7 +197,7 @@ export function QueryFilters({
 
       {/* Channels Section */}
       <div className="space-y-2">
-        <Label className="text-md font-bold">Channels</Label>
+        <Label className="text-sm font-medium">Channels</Label>
         <div className="space-y-2 border rounded-lg p-2">
           <div className="flex items-center justify-between pb-2 border-b">
             <Label>Select All</Label>
@@ -192,7 +208,7 @@ export function QueryFilters({
             />
           </div>
           {dummyChannels.map((channel) => (
-            <div key={channel.name} className="flex items-center justify-between py-1">
+            <div key={channel.name} className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
                 <Checkbox 
                   checked={channel.included}
@@ -201,34 +217,10 @@ export function QueryFilters({
                 />
                 <Label>{channel.name}</Label>
               </div>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    className="bg-[#FDFFF4] hover:text-[#00857C] hover:bg-[#00857C]/10"
-                  >
-                    Manage
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Manage {channel.name} Pages</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-2">
-                    {channel.pages.map((page) => (
-                      <div key={page.name} className="flex items-center space-x-2">
-                        <Checkbox 
-                          checked={page.included}
-                          onCheckedChange={() => onPageToggle(channel.name, page.name)}
-                          className="border-[#00857C] data-[state=checked]:bg-[#00857C]"
-                        />
-                        <Label>{page.name}</Label>
-                      </div>
-                    ))}
-                  </div>
-                </DialogContent>
-              </Dialog>
+              <ChannerlManage 
+                channelName={channel.name}
+                isDisabled={!channel.included}
+              />
             </div>
           ))}
         </div>
@@ -236,7 +228,7 @@ export function QueryFilters({
 
       {/* Public Sentiment Dropdown */}
       <div className="space-y-2">
-        <Label className="text-md font-bold">Public Sentiment</Label>
+        <Label className="text-sm font-medium">Public Sentiment</Label>
         <Select
           value={filterPanel.sentiment.all ? 'all' : 'custom'}
           onValueChange={() => {}}
@@ -270,27 +262,25 @@ export function QueryFilters({
       </div>
 
       {/* Link Included and Group Options */}
-      <div className="flex items-center space-x-6">
+      <div className="flex flex-col items-left justify-between gap-4">
         <div className="flex items-center space-x-2">
-          <Label className="text-md font-bold">Link Included</Label>
-          <Checkbox
-            id="linkExtracted"
+          <Label className="font-medium">Link Included</Label>
+          <Switch
             checked={filterPanel.linkExtracted}
             onCheckedChange={(checked) => 
               onFilterChange('linkExtracted', checked)
             }
-            className="border-[#00857C] data-[state=checked]:bg-[#00857C]"
+            className="data-[state=checked]:bg-[#00857C]"
           />
         </div>
         <div className="flex items-center space-x-2">
-          <Label className="text-md font-bold">Group included?</Label>
-          <Checkbox
-            id="groupIncluded"
+          <Label className="font-medium">Group included</Label>
+          <Switch
             checked={filterPanel.group !== 'all'}
             onCheckedChange={(checked) => 
               onFilterChange('group', checked ? 'wechat' : 'all')
             }
-            className="border-[#00857C] data-[state=checked]:bg-[#00857C]"
+            className="data-[state=checked]:bg-[#00857C]"
           />
         </div>
       </div>

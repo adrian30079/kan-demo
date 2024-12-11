@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { Badge } from "@/components/ui/badge"
-import { Flame, Clock, Search, Globe, Link, WandSparkles, Loader2, ArrowRight, ChevronDown, X, Plus, Image as ImageIcon, MessageSquare, Share2, Heart, Copy, Tag, Pin, SquareArrowOutUpRight } from 'lucide-react'
+import { Flame, Clock, Search, Globe, Link, WandSparkles, Loader2, ArrowRight, ChevronDown, X, Plus, Image as ImageIcon, MessageSquareMore, MessageSquareText, Share2, Heart, Copy, Tag, Pin, SquareArrowOutUpRight } from 'lucide-react'
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Input } from "@/components/ui/input"
@@ -26,8 +26,9 @@ import { PhotoGallery } from "./photo-gallery"
 import postsData from './data-post.json'
 import topicSettings from './data-topic-setting.json'
 import { Post } from "@/types/post"
+import { CommentGallery } from "./CommentGallery"
 
-export function PostMonitoringCardsComponentNoLimit({ 
+export function PostMonitoringCardsComponent3({ 
   onClose,
   selectedEntity 
 }: { 
@@ -52,6 +53,8 @@ export function PostMonitoringCardsComponentNoLimit({
   const [showGallery, setShowGallery] = React.useState(false)
   const [translationStates, setTranslationStates] = React.useState<{[key: string]: string | null}>({})
   const [expandedLinkIds, setExpandedLinkIds] = React.useState<Set<string>>(new Set())
+  const [showCommentGallery, setShowCommentGallery] = React.useState(false)
+  const [selectedPost, setSelectedPost] = React.useState<Post | null>(null)
 
   const sortedData = React.useMemo(() => {
     let sorted = [...postsData.posts]
@@ -288,23 +291,45 @@ export function PostMonitoringCardsComponentNoLimit({
                   </svg>
                   <span>{post.group}</span>
                   <SquareArrowOutUpRight className="h-3 w-3 text-gray-400 hover:text-gray-600" />
+                  {post.feedType === "post" && post.comment > 0 && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-xs ml-2"
+                      onClick={() => {
+                        setSelectedPost(post);
+                        setShowCommentGallery(true);
+                      }}
+                    >
+                      View Comments
+                    </Button>
+                  )}
                 </div>
-                <div className="flex items-center space-x-2">
-                  <Badge className={`${getSentimentColor(post.sentiment as "positive" | "negative" | "neutral" | "mixed")} cursor-default`}>
+                <div className="flex items-center space-x-1 text-sm">
+                  <Badge variant="outline" className={`${getSentimentColor(post.sentiment as "positive" | "negative" | "neutral" | "mixed")} cursor-default text-xs border-none`}>
                     {post.sentiment}
                   </Badge>
-                  <Flame className="h-4 w-4 text-red-500" />
+                  <Flame className="h-4 w-4 text-red-400" />
                   <span>{post.engagementIndex}</span>
-                  <MessageSquare className="h-4 w-4 text-blue-500" />
-                  <span>{post.comment}</span>
-                  <Share2 className="h-4 w-4 text-green-500" />
+                  <Share2 className="h-4 w-4 text-green-400" />
                   <span>{post.share}</span>
-                  <Heart className="h-4 w-4 text-red-500" />
+                  <Heart className="h-4 w-4 text-red-400" />
                   <span>{post.likes}</span>
+                  {post.feedType === "post" && (
+                    <>
+                      <MessageSquareMore className="h-4 w-4 text-blue-400" />
+                      <span>{post.comment}</span>
+                    </>
+                  )}
                 </div>
               </div>
               <div className="mt-2">
-                <div className="text-sm text-gray-500">{post.postDate}</div>
+                <div className="text-sm text-gray-500 flex items-center gap-2">
+                  {post.postDate}
+                  {post.feedType === "comment" && (
+                    <span className="italic text-gray-400 text-sm">*Comment*</span>
+                  )}
+                </div>
                 <div className="mt-1">
                   {isHighlightEnabled && highlightText ? (
                     (fullText ? post.fullContent : post.summary)
@@ -383,7 +408,8 @@ export function PostMonitoringCardsComponentNoLimit({
                 {post.classifiedContent.map((content, index) => (
                   <Badge 
                     key={`classified-${index}`} 
-                    className="bg-[#EDFBF9] text-[#32504C] border-none mr-1 flex items-center space-x-1"
+                    variant="outline" 
+                    className="bg-[#EDFBF9] text-[#32504C] mr-1 flex items-center space-x-1"
                   >
                     <Tag className="h-3 w-3" />
                     <span>{content}</span>
@@ -457,7 +483,7 @@ export function PostMonitoringCardsComponentNoLimit({
                         "text-gray-400 hover:text-gray-600",
                         translationStates[post.id] && "text-[#00857C]"
                       )}
-                    >
+                      >
                       <Globe className={cn(
                         "h-4 w-4",
                         translationStates[post.id] && "text-[#00857C]"
@@ -545,6 +571,12 @@ export function PostMonitoringCardsComponentNoLimit({
         <PhotoGallery 
           images={Object.values(currentPosts[0].imgGroup || {})}
           onClose={() => setShowGallery(false)}
+        />
+      )}
+      {showCommentGallery && selectedPost && (
+        <CommentGallery 
+          post={selectedPost} 
+          onClose={() => setShowCommentGallery(false)} 
         />
       )}
     </div>
