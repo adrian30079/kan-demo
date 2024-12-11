@@ -65,7 +65,7 @@ export function DashboardComponent() {
     { icon: MessageSquare, name: 'Featured Topics', id: 'featured-topics' },
     { icon: Folder, name: 'Own Topics', id: 'own-topics' },
     // { icon: LineChart, name: 'Comparison', id: 'comparison' },
-    // { icon: Search, name: 'Query', id: 'query' },
+    { icon: Search, name: 'Query', id: 'query' },
     { icon: Bell, name: 'Alerts', id: 'alerts' },
   ]
 
