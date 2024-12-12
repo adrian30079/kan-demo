@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import WordCloudsCard from './chart/WordCloudsCard';
 import WordCloudsCardJensen from './WordCloudsCard2';
-import HashtagRankingsCard from './HashtagRankingsCard';
+import HashtagRankingsCard from './chart/HashtagRankingsCard';
 import { PostMonitoringCardsComponent } from './post-monitoring-cards'
 
 const hashtagsData = [
@@ -30,16 +30,26 @@ const topMentionsData = [
 export function WhatTab() {
   return (
     <div className="space-y-6">
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-            <WordCloudsCardJensen />
-        </Card>
-        <Card>
-            <HashtagRankingsCard />
-        </Card>
-      </div>
+      <Card>
+        <WordCloudsCardJensen />
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>Top Hashtags</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {hashtagsData.map((hashtag) => (
+              <div key={hashtag.tag} className="flex items-center justify-between">
+                <Badge variant="secondary">{hashtag.tag}</Badge>
+                <span className="text-sm text-muted-foreground">{hashtag.count} mentions</span>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
       
-      <Card className="col-span-2">
+      <Card>
         <CardHeader>
           <CardTitle>Mentions</CardTitle>
         </CardHeader>

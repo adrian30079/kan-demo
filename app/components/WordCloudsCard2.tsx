@@ -77,7 +77,7 @@ export default function WordCloudsCardJensen() {
   }
 
   return (
-    <>
+    <Card className="shadow-none rounded-none">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Word Cloud</CardTitle>
         <div className="flex gap-2">
@@ -149,6 +149,6 @@ export default function WordCloudsCardJensen() {
           className="w-full h-auto max-h-[400px] object-contain mx-auto"
         />
       </CardContent>
-    </>
+    </Card>
   )
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { BarChart3, MessageSquare, Filter, DownloadIcon, Download, Settings, ChevronLeft, ArrowLeft, X } from 'lucide-react'
+import { BarChart3, MessageSquare, Filter, DownloadIcon, Download, Settings, ChevronLeft, ArrowLeft, X, Users2, Building2, Link, MessageCircle } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -26,34 +26,9 @@ import CreateNewTopicContent from './create-new-topic'
 import { useToast } from "@/components/ui/use-toast"
 import { TableOverlayNoLimit } from './table-overlay'
 import { Topic } from '@/types/index'
+import { AnalyticsCard } from './analytics-card'
 
-const tabItems = ['Overview', 'What', 'When', 'Who', 'Where', 'How', 'Inspect', 'Raw Data']
-
-const chartData = [
-  { date: "Mon", Facebook: 8500, Instagram: 4020, X: 2103, "Online Forum": 1004 },
-  { date: "Tue", Facebook: 7450, Instagram: 4150, X: 2130, "Online Forum": 1520 },
-  { date: "Wed", Facebook: 9020, Instagram: 5200, X: 1480, "Online Forum": 920 },
-  { date: "Thu", Facebook: 8540, Instagram: 4540, X: 2020, "Online Forum": 1650 },
-  { date: "Fri", Facebook: 9530, Instagram: 5450, X: 1290, "Online Forum": 1870 },
-  { date: "Sat", Facebook: 12000, Instagram: 6030, X: 3700, "Online Forum": 1880 },
-  { date: "Sun", Facebook: 9240, Instagram: 5230, X: 2580, "Online Forum": 1760 }
-]
-
-const CustomTooltip = ({ active, payload, label }) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-white p-4 border rounded shadow-lg">
-        <p className="font-bold mb-2">{label}</p>
-        {payload.map((entry, index) => (
-          <p key={index} style={{ color: entry.color }}>
-            {`${entry.name}: ${entry.value}`}
-          </p>
-        ))}
-      </div>
-    );
-  }
-  return null;
-};
+const tabItems = ['What', 'When', 'Who', 'Where', 'How', 'Inspect', 'Raw Data']
 
 interface TopicAnalysisProps {
   topic: Topic;
@@ -71,7 +46,7 @@ type ChartDataPoint = {
 
 export function TopicAnalysisComponent({ topic, onBack, isFeaturedTopic = false }: TopicAnalysisProps) {
   const { toast } = useToast()
-  const [activeTab, setActiveTab] = useState("Overview")
+  const [activeTab, setActiveTab] = useState("What")
   const [timeRange, setTimeRange] = useState("7d")
   const [filterPanel, setFilterPanel] = useState({
     resultType: '',
@@ -176,259 +151,142 @@ export function TopicAnalysisComponent({ topic, onBack, isFeaturedTopic = false 
           />
         ) : (
           <div className="space-y-6">
-            <div className="sticky top-0 z-10 py-2">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <Button 
-                    variant="ghost" 
-                    onClick={onBack}
-                    className="hover:bg-[#E9EEEE] hover:text-[#00857C]"
-                  >
-                    <ChevronLeft className="h-4 w-3 mr-1" />
-                    Back
-                  </Button>
-                  <div className="flex flex-col gap-1">
-                    <h1 className="text-3xl font-bold text-[#00857C]">{topic.name}</h1>
-                    <p className="text-xs text-gray-500">From 1 Apr 2024 to 20 Apr 2024</p>
+            <div className="sticky top-0 z-10 bg-white space-y-6">
+              <div className="py-2 space-y-4">
+                <Button 
+                  variant="ghost" 
+                  onClick={onBack}
+                  className="hover:bg-[#E9EEEE] hover:text-[#00857C]"
+                >
+                  <ChevronLeft className="h-4 w-3 mr-1" />
+                  Back
+                </Button>
+
+                <div className="flex justify-between items-center">
+                  <div className="flex flex-col gap-3">
+                    <h1 className="text-4xl font-bold text-gray-900">{topic.name}</h1>
+                    <p className="text-sm text-gray-500">
+                      Search Period: <span className="bg-gray-100 rounded-full px-2 py-1 italic">2024-01-01</span> to{" "}
+                      <span className="bg-gray-100 rounded-full px-2 py-1 italic">2024-12-31</span>
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant={showFilters ? "default" : "outline"} 
+                      onClick={() => setShowFilters(!showFilters)}
+                      className={showFilters ? "bg-[#00857C] text-white hover:bg-[#00857C]/90" : ""}
+                    >
+                      <Filter className="mr-2 h-4 w-4" />
+                      Filters
+                    </Button>
+                    <Button variant="outline">
+                      <Download className="mr-2 h-4 w-4" />
+                      Export Report
+                    </Button>
+                    <TooltipProvider>
+                      <UITooltip>
+                        <TooltipTrigger asChild>
+                          <Button 
+                            variant="outline" 
+                            onClick={() => setIsEditing(true)}
+                          >
+                            <Settings className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Edit Keyword Settings</p>
+                        </TooltipContent>
+                      </UITooltip>
+                    </TooltipProvider>
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  <Button 
-                    variant={showFilters ? "default" : "outline"} 
-                    onClick={() => setShowFilters(!showFilters)}
-                    className={showFilters ? "bg-[#00857C] text-white hover:bg-[#00857C]/90" : ""}
-                  >
-                    <Filter className="mr-2 h-4 w-4" />
-                    Filters
-                  </Button>
-                  <Button variant="outline">
-                    <Download className="mr-2 h-4 w-4" />
-                    Export Report
-                  </Button>
-                  <TooltipProvider>
-                    <UITooltip>
-                      <TooltipTrigger asChild>
-                        <Button 
-                          variant="outline" 
-                          onClick={() => setIsEditing(true)}
-                        >
-                          <Settings className="h-4 w-4" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Edit Keyword Settings</p>
-                      </TooltipContent>
-                    </UITooltip>
-                  </TooltipProvider>
-                </div>
+              </div>
+
+              <div className="grid grid-cols-6 gap-4">
+                <AnalyticsCard
+                  title="Mentions"
+                  value="45,231"
+                  icon={MessageSquare}
+                  className="h-[90px]"
+                />
+                <AnalyticsCard
+                  title="People"
+                  value="20,456"
+                  icon={Users2}
+                  className="h-[90px]"
+                />
+                <AnalyticsCard
+                  title="Entities"
+                  value="21"
+                  icon={Building2}
+                  className="h-[90px]"
+                />
+                <AnalyticsCard
+                  title="URLs"
+                  value="725"
+                  icon={Link}
+                  className="h-[90px]"
+                />
+                <AnalyticsCard
+                  title="WhatsApp"
+                  value="220"
+                  icon={MessageCircle}
+                  className="h-[90px]"
+                />
+                <AnalyticsCard
+                  title="WeChat"
+                  value="101"
+                  icon={MessageCircle}
+                  className="h-[90px]"
+                />
               </div>
             </div>
-            <Tabs defaultValue="Overview" className="w-full">
-              <TabsList className="grid w-full grid-cols-4 lg:grid-cols-8 bg-[#F3F6F7]">
-                {tabItems.map((tab) => (
-                  <TabsTrigger key={tab} value={tab} onClick={() => setActiveTab(tab)}>{tab}</TabsTrigger>
-                ))}
-              </TabsList>
-              <TabsContent value="Overview">
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mt-6">
+
+            <Tabs defaultValue="What" className="w-full [&>*]:rounded-none">
+              <div className="sticky top-[240px] z-10 bg-white">
+                <TabsList className="grid w-full grid-cols-4 lg:grid-cols-7 bg-[#F3F6F7] rounded-none p-0 h-full">
+                  {tabItems.map((tab) => (
+                    <TabsTrigger 
+                      key={tab} 
+                      value={tab} 
+                      onClick={() => setActiveTab(tab)}
+                      className="data-[state=active]:bg-[#00857C] data-[state=active]:text-white data-[state=active]:font-bold rounded-none shadow-none data-[state=active]:shadow-none px-0 py-2 h-full"
+                    >
+                      {tab}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+              </div>
+              <div className="border border-[#00857C] p-6 bg-[#F3F6F7]">
+                <TabsContent value="Inspect">
+                  <InspectTabComponent/>
+                </TabsContent>
+                <TabsContent value="What">
+                  <WhatTab />
+                </TabsContent>
+                <TabsContent value="Who">
+                  <WhoTab />
+                </TabsContent>
+                <TabsContent value="Where">
+                  <WhereTabComponent />
+                </TabsContent>
+                <TabsContent value="When">
+                  <WhenTab />
+                </TabsContent>
+                <TabsContent value="How">
+                  <HowTab />
+                </TabsContent>
+                <TabsContent value="Raw Data">
                   <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">
-                        Total Mentions
-                      </CardTitle>
-                      <MessageSquare className="h-4 w-4 text-muted-foreground" />
+                    <CardHeader>
+                      <CardTitle>Raw Data</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <div className="text-2xl font-bold">45,231</div>
+                      <RawDataComponent />
                     </CardContent>
                   </Card>
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">
-                        Total People Talking
-                      </CardTitle>
-                      <BarChart3 className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">20,456</div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">
-                        Average Mentions Per Day
-                      </CardTitle>
-                      <BarChart3 className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">1,508</div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">
-                        Average People Talking Per Day
-                      </CardTitle>
-                      <BarChart3 className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">682</div>
-                    </CardContent>
-                  </Card>
-                </div>
-                <Card className="mb-6 mt-6">
-                  <CardContent className="flex justify-between items-center py-4">
-                    <div className="flex flex-row items-center">
-                    <div className="text-sm ml-2 pr-4">Total Entities</div>
-                      <div className="text-2xl font-bold">21</div>
-                    </div>
-                    <div className="w-px h-12 bg-gray-200" />
-                    <div className="flex flex-row items-center">
-                      <div className="text-sm ml-2 pr-4">Total URLs</div>
-                      <div className="text-2xl font-bold">725</div>
-                    </div>
-                    <div className="w-px h-12 bg-gray-200" />
-                    <div className="flex flex-row items-center">
-                      <div>
-                        <div className="flex flex-row items-center">
-                          <div className="text-sm ml-2 pr-2">Total Groups</div>
-                          <div className="text-2xl font-bold pr-6">321</div>
-                          <div className="flex flex-row gap-4 text-sm text-muted-foreground mt-1">
-                          <div className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 rounded">
-                            <img src="/img/media/WhatsApp.png" alt="WhatsApp" className="w-4 h-4" />
-                            <span>WhatsApp 220</span>
-                          </div>
-                          <div className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 rounded">
-                            <img src="/img/media/WeChat.png" alt="WeChat" className="w-4 h-4" />
-                            <span>WeChat 101</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-                <div className="mt-6">
-                  <Card>
-                    <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
-                      <div className="grid flex-1 gap-1 text-center sm:text-left">
-                        <CardTitle>Overall Volume of Mentions</CardTitle>
-                        <CardDescription>
-                          Showing mentions across different platforms
-                        </CardDescription>
-                      </div>
-                      <div className="flex items-center gap-2">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="outline" size="sm" className="hover:border-[#00857C] hover:text-[#00857C]">
-                            <DownloadIcon className="h-4 w-4 mr-2" />
-                            Download
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                          <DropdownMenuItem>Download as PNG</DropdownMenuItem>
-                          <DropdownMenuItem>Download as CSV</DropdownMenuItem>
-                          </DropdownMenuContent>
-                      </DropdownMenu>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-                      <div className="h-[350px] w-full">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <LineChart
-                            data={chartData}
-                            margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-                            onClick={(data) => {
-                              if (data && data.activePayload) {
-                                const clickedPoint = data.activePayload[0].payload as ChartDataPoint;
-                                handleChartClick(clickedPoint);
-                              }
-                            }}
-                          >
-                            <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                            <XAxis 
-                              dataKey="date" 
-                              axisLine={false}
-                              tickLine={false}
-                              tickMargin={10}
-                              fontSize={12}
-                              stroke="#94a3b8"
-                            />
-                            <YAxis 
-                              axisLine={false}
-                              tickLine={false}
-                              tickMargin={10}
-                              fontSize={12}
-                              stroke="#94a3b8"
-                            />
-                            <Tooltip content={<CustomTooltip />} />
-                            <Line
-                              type="monotone"
-                              dataKey="Facebook"
-                              stroke="#0A83C4"
-                              strokeWidth={2}
-                              style={{ cursor: 'pointer' }}
-                              activeDot={{ r: 8, style: { cursor: 'pointer' } }}
-                            />
-                            <Line
-                              type="monotone"
-                              dataKey="Instagram"
-                              stroke="#E3559C"
-                              strokeWidth={2}
-                              style={{ cursor: 'pointer' }}
-                              activeDot={{ r: 8, style: { cursor: 'pointer' } }}
-                            />
-                            <Line
-                              type="monotone"
-                              dataKey="X"
-                              stroke="#725ACC"
-                              strokeWidth={2}
-                              style={{ cursor: 'pointer' }}
-                              activeDot={{ r: 8, style: { cursor: 'pointer' } }}
-                            />
-                            <Line
-                              type="monotone"
-                              dataKey="Online Forum"
-                              stroke="#00B1A5"
-                              strokeWidth={2}
-                              style={{ cursor: 'pointer' }}
-                              activeDot={{ r: 8, style: { cursor: 'pointer' } }}
-                            />
-                          </LineChart>
-                        </ResponsiveContainer>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              </TabsContent>
-              <TabsContent value="Inspect" className="mt-6">
-                <InspectTabComponent/>
-              </TabsContent>
-              <TabsContent value="What" className="mt-6">
-                <WhatTab />
-              </TabsContent>
-              <TabsContent value="Who" className="mt-6">
-                <WhoTab />
-              </TabsContent>
-              <TabsContent value="Where" className="mt-6">
-                <WhereTabComponent />
-              </TabsContent>
-              <TabsContent value="When" className="mt-6">
-                <WhenTab />
-              </TabsContent>
-              <TabsContent value="How" className="mt-6">
-                <HowTab />
-              </TabsContent>
-              <TabsContent value="Raw Data" className="mt-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Raw Data</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <RawDataComponent />
-                  </CardContent>
-                </Card>
-              </TabsContent>
+                </TabsContent>
+              </div>
             </Tabs>
           </div>
         )}

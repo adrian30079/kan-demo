@@ -23,6 +23,8 @@ import { TopicCard } from './topic-card'
 import QueryContent from './query-content'
 import { Topic } from '@/types/topic'
 import { ManagerMentionsCard } from './manager-mentions'
+import { DashboardSidebar } from './dashboard-sidebar'
+import { DashboardHeader } from './dashboard-header'
 
 type MenuItem = {
   icon: React.ElementType;
@@ -63,19 +65,28 @@ export function DashboardComponent() {
 
   const menuItems: MenuItem[] = [
     { icon: MessageSquare, name: 'Featured Topics', id: 'featured-topics' },
-    { icon: Folder, name: 'Own Topics', id: 'own-topics' },
-    // { icon: LineChart, name: 'Comparison', id: 'comparison' },
     { icon: Search, name: 'Query', id: 'query' },
     { icon: Bell, name: 'Alerts', id: 'alerts' },
   ]
 
   const [featuredTopics, setFeaturedTopics] = useState<Topic[]>(() => 
-    featuredTopicsData.featuredTopics.map(topic => ({
-      ...topic,
-      riskLevel: 'low',
-      emoji: undefined,
-      imageUrl: undefined
-    }))
+    featuredTopicsData.featuredTopics
+      .filter(topic => 
+        !['jpex monitoring'].includes(topic.name.toLowerCase())
+      )
+      .map(topic => ({
+        ...topic,
+        name: topic.name === 'Cryptocurrency1' ? '虛擬資產 VATP' :
+              topic.name === 'Artificial Intelligence' ? '唱高散貨 Suspicious Ramp and Dump' :
+              topic.name,
+        riskLevel: 'low',
+        emoji: undefined,
+        imageUrl: undefined,
+        period: {
+          start: '2024-01-01',
+          end: '2024-12-31'
+        }
+      }))
   );
 
   const [ownTopics, setOwnTopics] = useState<Topic[]>([])
@@ -306,12 +317,15 @@ export function DashboardComponent() {
                 </p>
               </div>
               <div className="flex gap-4 bg-white">
-                <Input
-                  placeholder="Search topics..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="max-w-xs bg-white"
-                />
+                <div className="relative flex items-center w-full">
+                  <Search className="absolute left-3 h-4 w-4 text-gray-500" />
+                  <Input
+                    placeholder="Search topics..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="max-w-xs bg-white shadow-none rounded-none pl-10"
+                  />
+                </div>
               </div>
               {ownTopics.length > 0 ? (
                 <div className="grid gap-6">
@@ -444,6 +458,9 @@ export function DashboardComponent() {
   }
 
   const handleMenuItemClick = (menuId: string) => {
+    // Clear the analysis state when navigating away
+    setSelectedTopicForAnalysis(null)
+    
     if (showCreateNewTopic) {
       if (confirm('Are you sure you want to leave? Any unsaved changes will be lost.')) {
         setShowCreateNewTopic(false)
@@ -461,101 +478,13 @@ export function DashboardComponent() {
 
   return (
     <div className="grid h-screen w-full lg:grid-cols-[auto_1fr]">
-      <aside className={`${isExpanded ? 'w-56' : 'w-16'} hidden bg-white transition-all duration-300 ease-in-out lg:block min-w-[4rem] h-screen overflow-visible`}>
-        <div className="flex h-full flex-col overflow-visible">
-          <div className="flex h-14 items-center px-4 pl-4 border-b overflow-visible">
-
-              <div
-                className="flex items-center font-semibold justify-start overflow-visible"
-                onClick={() => setActiveTab('featured-topics')}
-              >
-                <div className="relative h-10 w-10 py-2">
-                  <img
-                    key={1}
-                    src="/img/logo-new.png"
-                    alt="SFC logo"
-                    className="object-contain w-full h-full"
-                  />
-                </div>
-                <span className="text-lg text-[#00857C] tracking-tight whitespace-nowrap flex-shrink-0">SENSOR</span>
-                <div className="mx-1 border-r ml-3 h-[28px] w-1"/>
-                {isExpanded && (
-                <span className="pl-2 text-sm text-[#9BB5B1] truncate font-light">Suspicious Fraudulent Activities Detection in Social Media Monitoring</span>
-              )}
-              </div>
-          </div>
-          <nav className="flex-1 bg-[#f7fafa] border-r pt-2 flex flex-col justify-between">
-            <ul className="space-y-1 p-2">
-              {menuItems.map((item) => (
-                <li key={item.id}>
-                  <Button
-                    variant="ghost"
-                    className={`w-full ${isExpanded ? 'justify-start' : 'justify-center'} ${
-                      (activeTab === item.id || (showCreateNewTopic && item.id === 'create-new-topic')) ? 'bg-[#008d84]/10 text-[#008d84] hover:bg-[#008d84]/20' : ''
-                    }`}
-                    onClick={() => handleMenuItemClick(item.id)}
-                  >
-                    <item.icon className={`h-5 w-5 ${isExpanded ? 'mr-2' : ''} ${
-                      (activeTab === item.id || (showCreateNewTopic && item.id === 'create-new-topic')) ? 'text-[#008d84]' : ''
-                    }`} />
-                    {isExpanded && <span>{item.name}</span>}
-                  </Button>
-                </li>
-              ))}
-            </ul>
-            <div className="relative px-3 py-2 text-[10px] text-gray-400 w-full overflow-hidden text-ellipsis">
-              {isExpanded && "SENSOR prototype v1.0 data and content are for referencing usage."}
-            </div>
-          </nav>
-          <div className="flex h-14 items-center justify-end border-t px-4 border-r ">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsExpanded(!isExpanded)}
-              aria-label={isExpanded ? "Collapse menu" : "Expand menu"}
-            >
-              {isExpanded ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-            </Button>
-          </div>
-        </div>
-      </aside>
+      <DashboardSidebar 
+        activeTab={activeTab}
+        showCreateNewTopic={showCreateNewTopic}
+        onMenuItemClick={handleMenuItemClick}
+      />
       <div className="flex flex-col h-screen overflow-hidden">
-        <header className="flex h-14 items-center justify-end gap-3 border-b px-6">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="lg:hidden mr-auto text-[#00857C]"
-          >
-            <Menu className="h-6 w-6" />
-            <span className="sr-only">Toggle menu</span>
-          </Button>
-          {/* <Button 
-            onClick={() => setShowCreateNewTopic(true)} 
-            className="bg-[#00857C] text-white hover:bg-[#007a73]"
-          >
-            <Plus className="mr-2 h-4 w-4" /> Create New Topic
-          </Button> */}
-          <div className="pl-2 text-sm text-gray-700 ml-2 truncate font-light">U0051 IS</div>
-          <div className="inline-flex items-center rounded-full bg-gray-400 px-3 py-1 text-xs text-white">Manager 2</div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="text-[#576968] bg-gray-100 border-gray-200 hover:text-[#00857C]  hover:bg-[#C8DEDB]">
-                <User className="h-8 w-8" />
-                <span className="sr-only">User</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem className="hover:bg-gray-200">
-                <Globe className="mr-2 h-4 w-4" />
-                <span>Change Language</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="hover:bg-gray-200">
-                <LogOut className="mr-2 h-4 w-4" />
-                <span>Logout</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </header>
+        <DashboardHeader />
         <main className="flex-1 overflow-y-auto bg-[#FDFDFD]">
           {renderMainContent()}
         </main>
