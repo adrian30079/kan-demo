@@ -26,7 +26,7 @@ import { PhotoGallery } from "./photo-gallery"
 import postsData from './data-post.json'
 import topicSettings from './data-topic-setting.json'
 import { Post } from "@/types/post"
-import { CommentGallery } from "./CommentGallery"
+import { CommentGallery } from "./commentGallery"
 
 export function PostMonitoringCardsComponent({ 
   onClose,
