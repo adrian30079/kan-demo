@@ -1,0 +1,56 @@
+[
+  {
+    "status": true,
+    "name": "Sentiment 15min - bryan",
+    "type": "Periodic Notifications",
+    "channels": ["facebook", "instagram", "X", "LIHKG"],
+    "topic": "虛擬資產 VATP",
+    "timeTriggered": 13,
+    "email": ["bryan@gmail.com", "adrian3000@gmail.com"]
+  },
+  {
+    "status": true,
+    "name": "JPEX spike 15mins",
+    "type": "Periodic Notifications",
+    "channels": ["facebook", "instagram"],
+    "topic": "唱高散貨 Suspicious Ramp and Dump",
+    "timeTriggered": 37,
+    "email": ["bryan@gmail.com", "jenson300@gmail.com"]
+  },
+  {
+    "status": true,
+    "name": "Perio Test hourly",
+    "type": "Periodic Notifications",
+    "channels": ["instagram", "X", "LIHKG"],
+    "topic": "虛擬資產 VATP",
+    "timeTriggered": 397,
+    "email": ["bryan@gmail.com", "jenson300@gmail.com"]
+  },
+  {
+    "status": false,
+    "name": "Alert Demo",
+    "type": "Periodic Notifications",
+    "channels":  ["X"],
+    "topic": "蔡鳳儀執行董事",
+    "timeTriggered": 9,
+    "email": ["bryan@gmail.com", "jenson300@gmail.com"]
+  },
+  {
+    "status": true,
+    "name": "Alert Demo3",
+    "type": "Periodic Notifications",
+    "channels": ["facebook", "LIHKG"],
+    "topic": "蔡鳳儀執行董事",
+    "timeTriggered": 13,
+    "email": "bryan@gmail.com"
+  },
+  {
+    "status": false,
+    "name": "Alert Demo2",
+    "type": "Periodic Notifications",
+    "channels": ["instagram", "X"],
+    "topic": "蔡鳳儀執行董事",
+    "timeTriggered": 9,
+    "email": "bryan@gmail.com"
+  }
+]

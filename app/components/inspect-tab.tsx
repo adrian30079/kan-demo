@@ -4,10 +4,9 @@ import { useMemo, useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardDescription, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, Download, Plus, Settings2, DownloadIcon } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Download, Plus, Settings, DownloadIcon, Settings2 } from 'lucide-react'
 import dataPost from './data-post.json'
 import { PostMonitoringCardsComponent } from "./post-monitoring-cards"
-import { NerEditDialog } from "./filter/edit-ner-labels"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,9 +23,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { EntityTreemap } from './chart/entity-treemap'
-import { TopNERTimeChart } from './chart/top5-ner-entities-chart'
-import { EntityMentionsChart } from './chart/Newly-Identified-NER-Last7Days'
+import { BaseTreeMap, TreeMapItem } from './chart/base-treemap'
+import { ManageItemsDialog } from "@/components/ui/manage-items-dialog"
+import { ChartDownloadButton } from './chart/chart-download-button'
+import { BarChartTemplate } from './chart/bar-chart-template'
+import { DataTable, SortableHeader } from "@/components/data-table"
+import { ColumnDef } from "@tanstack/react-table"
 
 type Post = {
   id: string
@@ -48,6 +50,19 @@ type Post = {
   country: string
   language: string
 }
+
+const dummyEntitiesData = [
+  { entity: "股市達人阿強", color: "#00857C" },
+  { entity: "CoinUnited", color: "#00B1A5" },
+  { entity: "JPEX家庭", color: "#0070AC" },
+  { entity: "比特幣", color: "#593FB6" },
+  { entity: "區塊鏈", color: "#DA418E" },
+  { entity: "加密貨幣", color: "#E66A22" },
+  { entity: "NFT", color: "#FFA600" },
+  { entity: "Web3", color: "#3CAEA3" },
+  { entity: "元宇宙", color: "#20639B" },
+  { entity: "DeFi", color: "#ED553B" }
+];
 
 export function TableOverlay({ 
   onClose, 
@@ -91,35 +106,6 @@ export function TableOverlay({
     </div>
   )
 }
-
-
-// Add handlers for NER label management
-const handleToggleNerLabel = (labelName: string) => {
-  setNerLabels(labels => 
-    labels.map(label => 
-      label.name === labelName ? { ...label, included: !label.included } : label
-    )
-  )
-}
-
-const handleToggleAllNerLabels = (included: boolean) => {
-  setNerLabels(labels => labels.map(label => ({ ...label, included })))
-}
-
-
-// Update the dummy entities data with specific colors
-const dummyEntitiesData = [
-  { entity: "我要做股神", color: "#FF6B6B" },
-  { entity: "CoinUnited", color: "#4ECDC4" },
-  { entity: "JPEX家庭", color: "#45B7D1" },
-  { entity: "比特幣", color: "#96CEB4" },
-  { entity: "區塊鏈", color: "#FFEEAD" },
-  { entity: "加密貨幣", color: "#D4A5A5" },
-  { entity: "NFT", color: "#9B5DE5" },
-  { entity: "Web3", color: "#00BBF9" },
-  { entity: "元宇宙", color: "#F15BB5" },
-  { entity: "DeFi", color: "#FEE440" },
-]
 
 export function InspectTabComponent() {
   const [currentURLPage, setCurrentURLPage] = useState(1)
@@ -180,18 +166,6 @@ export function InspectTabComponent() {
     currentEntityPage * itemsPerPage
   )
 
-  const handleExport = (data: any[], filename: string) => {
-    const csvContent = "data:text/csv;charset=utf-8," 
-      + data.map(row => Object.values(row).join(",")).join("\n");
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `${filename}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }
-
   useEffect(() => {
     const styleTag = document.createElement('style')
     styleTag.textContent = `
@@ -219,12 +193,6 @@ export function InspectTabComponent() {
   const top10Entities = useMemo(() => {
     return topEntities.slice(0, 10).map(entity => entity.entity)
   }, [topEntities])
-
-
-  const [nerTypes, setNerTypes] = useState({
-    entities: true,
-    nonEntities: true
-  })
 
 
   // Updated dummy chart data generation with more variations
@@ -299,153 +267,282 @@ export function InspectTabComponent() {
     })
   }, [topEntities])
 
+  const [manageDialogOpen, setManageDialogOpen] = useState(false)
+  const [selectedItems, setSelectedItems] = useState<Set<string>>(() => 
+    new Set(topEntities.slice(0, 50).map(entity => entity.entity))
+  )
+
+  type EntityTableItem = {
+    entity: string
+    count: number
+    randomMentions: number
+    engagementIndex: number
+    avgEngagement: number
+    channel: string
+  }
+
+  const columns: ColumnDef<EntityTableItem>[] = [
+    {
+      accessorKey: "entity",
+      header: ({ column }) => (
+        <SortableHeader
+          column={column}
+          onClick={() => handleSort(column, sorting, setSorting)}
+        >
+          Entity
+        </SortableHeader>
+      ),
+      size: 200,
+    },
+    {
+      accessorKey: "count",
+      header: ({ column }) => (
+        <SortableHeader
+          column={column}
+          onClick={() => handleSort(column, sorting, setSorting)}
+        >
+          Mentions
+        </SortableHeader>
+      ),
+      size: 100,
+    },
+    {
+      accessorKey: "randomMentions",
+      header: ({ column }) => (
+        <SortableHeader
+          column={column}
+          onClick={() => handleSort(column, sorting, setSorting)}
+        >
+          Random Mentions
+        </SortableHeader>
+      ),
+      size: 140,
+    },
+    {
+      accessorKey: "engagementIndex",
+      header: ({ column }) => (
+        <SortableHeader
+          column={column}
+          onClick={() => handleSort(column, sorting, setSorting)}
+        >
+          Engagement Index
+        </SortableHeader>
+      ),
+      size: 140,
+    },
+    {
+      accessorKey: "avgEngagement",
+      header: ({ column }) => (
+        <SortableHeader
+          column={column}
+          onClick={() => handleSort(column, sorting, setSorting)}
+        >
+          Avg. Engagement
+        </SortableHeader>
+      ),
+      size: 140,
+    },
+    {
+      accessorKey: "channel",
+      header: ({ column }) => (
+        <SortableHeader
+          column={column}
+          onClick={() => handleSort(column, sorting, setSorting)}
+        >
+          Channels
+        </SortableHeader>
+      ),
+      size: 200,
+    },
+  ]
+
+  const [sorting, setSorting] = useState<SortingState>([])
+
   return (
     <div className="space-y-6">
-
-      <EntityMentionsChart 
-        data={topEntities}
-        timeRange={timeRange}
-        onTimeRangeChange={setTimeRange}
-      />
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Entity Distribution Treemap</CardTitle>
           <div className="flex gap-2">
-            <NerEditDialog
-              channelName="NER Labels"
-              isDisabled={false}
-              onTogglePage={handleToggleNerLabel}
-              onToggleAllPages={handleToggleAllNerLabels}
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setManageDialogOpen(true)}
+              className="hover:border-[#00857C] hover:text-[#00857C]"
+            >
+              <Settings className="mr-2 h-4 w-4" />
+              Manage
+            </Button>
+
+            <ChartDownloadButton
+              data={topEntities.filter(entity => selectedItems.has(entity.entity))}
+              filename="treemap_data"
+              variant="dropdown"
             />
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm"
-                className="hover:border-[#00857C] hover:text-[#00857C]">
-                  <Settings2 className="mr-2 h-4 w-4" />
-                  Filter NER Type
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem
-                  onClick={() => setNerTypes(prev => ({...prev, entities: !prev.entities}))}
-                  className="flex items-center gap-2"
-                >
-                  {nerTypes.entities}
-                  Entities
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={() => setNerTypes(prev => ({...prev, nonEntities: !prev.nonEntities}))}
-                  className="flex items-center gap-2"
-                >
-                  {nerTypes.nonEntities}
-                  Non-entities
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="hover:border-[#00857C] hover:text-[#00857C]">
-                <DownloadIcon className="h-4 w-4 mr-2" />
-                Download
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem>Download as PNG</DropdownMenuItem>
-              <DropdownMenuItem>Download as CSV</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+
+            <ManageItemsDialog
+              open={manageDialogOpen}
+              onOpenChange={setManageDialogOpen}
+              title="Manage Entities"
+              description="Select entities to display in the treemap"
+              items={topEntities.map(entity => ({
+                id: entity.entity,
+                name: entity.entity,
+                metadata: {
+                  mentions: entity.randomMentions,
+                  channel: entity.channel,
+                  engagement: Math.round(entity.engagementIndex / entity.count)
+                },
+                count: entity.count
+              }))}
+              selectedItems={selectedItems}
+              onSelectionChange={setSelectedItems}
+              maxItems={50}
+              metadataLabels={{
+                mentions: "Mentions",
+                channel: "Channel",
+                engagement: "Avg. Engagement"
+              }}
+            />
           </div>
         </CardHeader>
         <CardContent>
-          <EntityTreemap data={topEntities.slice(0, 20)} />
+          <BaseTreeMap 
+            data={topEntities
+              .filter(entity => selectedItems.has(entity.entity))
+              .map(entity => ({
+                x: entity.entity,
+                y: entity.count,
+                raw: {
+                  x: entity.entity,
+                  y: entity.count,
+                  channel: entity.channel,
+                  mentions: entity.randomMentions
+                }
+              }))}
+            height={400}
+            fontSize="14px"
+            limit={50}
+          />
         </CardContent>
       </Card>
 
-      <TopNERTimeChart data={data} />
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle>Top 5 Entity Mentions</CardTitle>
+            <CardDescription>
+              Daily mention frequency for top performing entities
+            </CardDescription>
+          </div>
+          <div className="flex gap-2">
+            <ChartDownloadButton
+              data={useMemo(() => {
+                const dates = [
+                  "11/24",
+                  "11/25",
+                  "11/26",
+                  "11/27",
+                  "11/28",
+                  "11/29",
+                  "11/30"
+                ]
+
+                const entityBaseLevels = {
+                  'CoinUnited': 850,
+                  'JPEX集团': 650,
+                  '远翔集团': 500,
+                  'Arrexpro': 350,
+                  '世博1120': 120
+                }
+
+                return dates.map(date => ({
+                  date,
+                  ...Object.fromEntries(
+                    Object.entries(entityBaseLevels).map(([entity, baseLevel]) => [
+                      entity,
+                      Math.round(baseLevel + (Math.random() - 0.9) * 0.6 * baseLevel)
+                    ])
+                  )
+                }))
+              }, [])}
+              filename="top_5_entity_mentions"
+              variant="dropdown"
+            />
+          </div>
+        </CardHeader>
+        <CardContent>
+          <BarChartTemplate
+            data={useMemo(() => {
+              const dates = [
+                "11/24",
+                "11/25",
+                "11/26",
+                "11/27",
+                "11/28",
+                "11/29",
+                "11/30"
+              ]
+
+              const entityBaseLevels = {
+                'CoinUnited': 850,
+                'JPEX集团': 650,
+                '远翔集团': 500,
+                'Arrexpro': 350,
+                '世博1120': 120
+              }
+
+              return dates.map(date => ({
+                date,
+                ...Object.fromEntries(
+                  Object.entries(entityBaseLevels).map(([entity, baseLevel]) => [
+                    entity,
+                    Math.round(baseLevel + (Math.random() - 0.9) * 0.6 * baseLevel)
+                  ])
+                )
+              }))
+            }, [])}
+            type="grouped"
+            layout="horizontal"
+            categoryKey="date"
+            dataKey={['CoinUnited', 'JPEX集团', '远翔集团', 'Arrexpro', '世博1120']}
+            height={400}
+            colors={['#00B1A5', '#0070AC', '#593FB6', '#DA418E', '#E66A22']}
+          />
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Entities by mentions</CardTitle>
-          <div className="flex items-center space-x-2">
-            <Select>
-              <SelectTrigger className="w-[100px] rounded-lg">
-                <SelectValue placeholder="Top 10" />
-              </SelectTrigger>
-              <SelectContent className="rounded-xl">
-                <SelectItem value="10">10</SelectItem>
-                <SelectItem value="25">25</SelectItem>
-                <SelectItem value="50">50</SelectItem>
-                <SelectItem value="100">100</SelectItem>
-                <SelectItem value="200">200</SelectItem>
-                <SelectItem value="300">300</SelectItem>
-                <SelectItem value="400">400</SelectItem>
-                <SelectItem value="500">500</SelectItem>
-                <SelectItem value="1000">1000</SelectItem>
-                <SelectItem value="1500">1500</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleExport(topEntities, 'entities_by_mentions')}
-            >
-              <Download className="mr-2 h-4 w-4" />
-              Export
-            </Button>
-          </div>
+          <ChartDownloadButton
+            data={topEntities.map(entity => ({
+              entity: entity.entity,
+              count: entity.count,
+              randomMentions: entity.randomMentions,
+              engagementIndex: entity.engagementIndex,
+              avgEngagement: Math.round(entity.engagementIndex / entity.count),
+              channel: entity.channel
+            }))}
+            filename="entities_by_mentions"
+            variant="csv"
+          />
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader className="bg-[#E9EEEE]">
-              <TableRow>
-                <TableHead className="text-[#213938]">Entity</TableHead>
-                <TableHead className="text-[#213938]">Mentions</TableHead>
-                <TableHead className="text-[#213938]">Random Mentions</TableHead>
-                <TableHead className="text-[#213938]">Engagement Index</TableHead>
-                <TableHead className="text-[#213938]">Avg. Engagement</TableHead>
-                <TableHead className="text-[#213938]">Channels</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {paginatedEntities.map((entity) => (
-                <TableRow 
-                  key={entity.entity}
-                  onClick={() => {
-                    setSelectedEntity(entity.entity)
-                    setShowOverlay(true)
-                  }}
-                  className="cursor-pointer"
-                >
-                  <TableCell className="font-medium">{entity.entity}</TableCell>
-                  <TableCell>{entity.count}</TableCell>
-                  <TableCell>{entity.randomMentions}</TableCell>
-                  <TableCell>{entity.engagementIndex}</TableCell>
-                  <TableCell>{Math.round(entity.engagementIndex / entity.count)}</TableCell>
-                  <TableCell>{entity.channel}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <div className="flex justify-end items-center space-x-2 mt-4">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCurrentEntityPage(prev => Math.max(prev - 1, 1))}
-              disabled={currentEntityPage === 1}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <span>Page {currentEntityPage}</span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setCurrentEntityPage(prev => prev + 1)}
-              disabled={currentEntityPage * itemsPerPage >= topEntities.length}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
+          <DataTable 
+            columns={columns}
+            data={topEntities.map(entity => ({
+              entity: entity.entity,
+              count: entity.count,
+              randomMentions: entity.randomMentions,
+              engagementIndex: entity.engagementIndex,
+              avgEngagement: Math.round(entity.engagementIndex / entity.count),
+              channel: entity.channel
+            }))}
+            sorting={sorting}
+            setSorting={setSorting}
+          />
         </CardContent>
       </Card>
 

@@ -2,27 +2,19 @@
 
 import React, { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, LineChart, Line } from "recharts"
+import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, CartesianGrid } from "recharts"
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart"
-import { Download, HelpCircle } from 'lucide-react'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { TableOverlayNoLimit } from './table-overlay'
+import { ChartDownloadButton } from "@/components/chart/chart-download-button"
 
 const mentionsData = [
-  { date: "01/Nov/2024", mentions: 1422 },
-  { date: "02/Nov/2024", mentions: 2512 },
-  { date: "03/Nov/2024", mentions: 924 },
-  { date: "04/Nov/2024", mentions: 1514 },
-  { date: "05/Nov/2024", mentions: 1127 },
-  { date: "06/Nov/2024", mentions: 2025 },
-  { date: "07/Nov/2024", mentions: 1020 },
+  { date: "24/Nov/2024", mentions: 1422 },
+  { date: "25/Nov/2024", mentions: 2512 },
+  { date: "26/Nov/2024", mentions: 924 },
+  { date: "27/Nov/2024", mentions: 1514 },
+  { date: "28/Nov/2024", mentions: 1127 },
+  { date: "29/Nov/2024", mentions: 2025 },
+  { date: "30/Nov/2024", mentions: 1020 },
 ]
 
 const relativeVolumeData = [
@@ -41,158 +33,89 @@ export function WhenTab() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h2 className="text-lg text-muted-foreground mb-6">When are the topics discussed?</h2>
-        <div className="grid gap-6 grid-cols-1 md:grid-cols-3">
-          <Card 
-            className="bg-gradient-to-b from-white via-white to-[#F4FCFC] cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02]"
-            onClick={() => {
-              setSelectedDate("17-Nov-2024")
-              setShowOverlay(true)
-            }}
-          >
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-base font-medium">
-                Peak Date
-                <TooltipProvider>
-                  <Tooltip delayDuration={0}>
-                    <TooltipTrigger asChild>
-                      <HelpCircle className="h-4 w-4 ml-2 inline-block text-muted-foreground" />
-                    </TooltipTrigger>
-                    <TooltipContent className="bg-white text-black border shadow-md transition-all duration-150 ease-in-out">
-                      <p>Day within the selected period with most mentions.</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">17-Nov-2024</div>
-            </CardContent>
-          </Card>
+      <div className="grid gap-6 grid-cols-1 md:grid-cols-3">
+        <Card className="w-full shadow-none rounded-none">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0">
+            <CardTitle className="text-base font-medium">Peak Date</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">17-Nov-2024</div>
+          </CardContent>
+        </Card>
 
-          <Card 
-            className="bg-gradient-to-b from-white via-white to-[#F4FCFC] cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02]"
-            onClick={() => {
-              setSelectedDate("Monday")
-              setShowOverlay(true)
-            }}
-          >
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-base font-medium">
-                Peak Day of Week
-                <TooltipProvider>
-                  <Tooltip delayDuration={0}>
-                    <TooltipTrigger asChild>
-                      <HelpCircle className="h-4 w-4 ml-2 inline-block text-muted-foreground" />
-                    </TooltipTrigger>
-                    <TooltipContent className="bg-white text-black border shadow-md transition-all duration-150 ease-in-out">
-                      <p>The day within the week with most mentions.</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">Monday</div>
-            </CardContent>
-          </Card>
+        <Card className="w-full shadow-none rounded-none">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0">
+            <CardTitle className="text-base font-medium">Peak Day of Week</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">Monday</div>
+          </CardContent>
+        </Card>
 
-          <Card 
-            className="bg-gradient-to-b from-white via-white to-[#F4FCFC] cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02]"
-            onClick={() => {
-              setSelectedDate("00:00 - 01:00")
-              setShowOverlay(true)
-            }}
-          >
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-base font-medium">
-                Peak Hour
-                <TooltipProvider>
-                  <Tooltip delayDuration={0}>
-                    <TooltipTrigger asChild>
-                      <HelpCircle className="h-4 w-4 ml-2 inline-block text-muted-foreground" />
-                    </TooltipTrigger>
-                    <TooltipContent className="bg-white text-black border shadow-md transition-all duration-150 ease-in-out">
-                      <p>The hour within the day with most mentions.</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">00:00 - 01:00</div>
-            </CardContent>
-          </Card>
-        </div>
+        <Card className="w-full shadow-none rounded-none">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0">
+            <CardTitle className="text-base font-medium">Peak Hour</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">00:00 - 01:00</div>
+          </CardContent>
+        </Card>
       </div>
 
-      <Card className="p-6">
+      <Card className="w-full shadow-none rounded-none">
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            Overall Volume of Mentions
-            <TooltipProvider>
-              <Tooltip delayDuration={0}>
-                <TooltipTrigger asChild>
-                  <HelpCircle className="h-4 w-4 text-muted-foreground" />
-                </TooltipTrigger>
-                <TooltipContent className="bg-white text-black border shadow-md transition-all duration-150 ease-in-out">
-                  <p>Number of mentions in the topic.</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </CardTitle>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
-                <Download className="h-4 w-4 mr-2" />
-                Download
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem>Download as PNG</DropdownMenuItem>
-              <DropdownMenuItem>Download as CSV</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <CardTitle>Overall Share of Voice</CardTitle>
+          <ChartDownloadButton 
+            data={mentionsData}
+            filename="share_of_voice"
+            variant="dropdown"
+          />
         </CardHeader>
-        <CardContent className="pt-4">
-          <div 
-            className="overflow-x-auto cursor-pointer" 
-            onClick={() => {
-              setSelectedDate("Overall Volume")
-              setShowOverlay(true)
-            }}
-          >
+        <CardContent>
+          <div className="overflow-x-auto">
             <ChartContainer
               config={{
                 mentions: {
                   label: "Mentions",
-                  color: "hsl(24.6, 95%, 53.1%)",
+                  color: "#00857C",
                 },
               }}
               className="w-full h-[300px] sm:h-[400px] min-w-[600px]"
             >
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={mentionsData}>
-                  <XAxis
+                <AreaChart data={mentionsData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                  <XAxis 
                     dataKey="date"
+                    stroke="#6B7280"
+                    fontSize={12}
                     tickLine={false}
                     axisLine={false}
                     tickMargin={10}
                   />
-                  <YAxis
+                  <YAxis 
+                    stroke="#6B7280"
+                    fontSize={12}
                     tickLine={false}
                     axisLine={false}
                     tickMargin={10}
                   />
-                  <ChartTooltip />
-                  <Line
+                  <ChartTooltip 
+                    contentStyle={{
+                      backgroundColor: 'white',
+                      border: '1px solid #E5E7EB',
+                      borderRadius: '6px',
+                      padding: '8px'
+                    }}
+                  />
+                  <Area
                     type="monotone"
                     dataKey="mentions"
-                    stroke="hsl(24.6, 95%, 53.1%)"
+                    stroke="#00857C"
+                    fill="#00857C"
                     strokeWidth={2}
                   />
-                </LineChart>
+                </AreaChart>
               </ResponsiveContainer>
             </ChartContainer>
           </div>

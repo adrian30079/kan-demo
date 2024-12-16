@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { BarChart3, MessageSquare, Filter, DownloadIcon, Download, Settings, ChevronLeft, ArrowLeft, X, Users2, Building2, Link, MessageCircle } from 'lucide-react'
+import { BarChart3, MessageSquare, Filter, DownloadIcon, Download, Settings, ChevronLeft, ArrowLeft, X, Users2, Building2, Link, MessageCircle, MoreVertical } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -34,6 +34,7 @@ interface TopicAnalysisProps {
   topic: Topic;
   onBack: () => void;
   isFeaturedTopic?: boolean;
+  variant?: 'default' | 'comparison';
 }
 
 type ChartDataPoint = {
@@ -44,7 +45,7 @@ type ChartDataPoint = {
   "Online Forum": number;
 }
 
-export function TopicAnalysisComponent({ topic, onBack, isFeaturedTopic = false }: TopicAnalysisProps) {
+export function TopicAnalysisComponent({ topic, onBack, isFeaturedTopic = false, variant = 'default' }: TopicAnalysisProps) {
   const { toast } = useToast()
   const [activeTab, setActiveTab] = useState("What")
   const [timeRange, setTimeRange] = useState("7d")
@@ -202,13 +203,7 @@ export function TopicAnalysisComponent({ topic, onBack, isFeaturedTopic = false 
                 </div>
               </div>
 
-              <div className="grid grid-cols-6 gap-4">
-                <AnalyticsCard
-                  title="Mentions"
-                  value="45,231"
-                  icon={MessageSquare}
-                  className="h-[90px]"
-                />
+              <div className="grid grid-cols-5 gap-4">
                 <AnalyticsCard
                   title="People"
                   value="20,456"
@@ -278,9 +273,7 @@ export function TopicAnalysisComponent({ topic, onBack, isFeaturedTopic = false 
                 </TabsContent>
                 <TabsContent value="Raw Data">
                   <Card>
-                    <CardHeader>
-                      <CardTitle>Raw Data</CardTitle>
-                    </CardHeader>
+                    <div className="p-4"></div>
                     <CardContent>
                       <RawDataComponent />
                     </CardContent>

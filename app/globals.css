@@ -1,0 +1,31 @@
+:root {
+  --primary: 174 99% 32%; /* This should be the HSL values for #00A59A */
+  --primary-foreground: 0 0% 100%;
+} 
+
+.tooltip-content {
+  padding: 8px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.8);
+  border-radius: 4px;
+}
+
+.tooltip-content div {
+  margin: 4px 0;
+}
+
+[data-text] {
+  transition: transform 0.2s;
+  cursor: pointer;
+} 
+
+@font-face {
+  font-family: 'Seoul UI';
+  src: url('/fonts/SeoulUI.woff2') format('woff2'),
+       url('/fonts/SeoulUI.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+} 

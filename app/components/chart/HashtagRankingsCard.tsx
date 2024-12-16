@@ -2,10 +2,10 @@ import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Download, ArrowUpDown } from "lucide-react"
-import { DataTable, SortableHeader, handleSort } from "@/components/data-table"
+import { Download } from "lucide-react"
+import { DataTable, SortableHeader } from "@/components/data-table"
 import { ColumnDef } from "@tanstack/react-table"
-import { SortingState } from "@tanstack/react-table"
+import { ChartDownloadButton } from "./chart-download-button"
 
 const hashtagsData = [
   { tag: '#加密貨幣', count: 1234 },
@@ -70,8 +70,6 @@ const formatNumber = (num: number) => {
 }
 
 export default function HashtagRankingsCard() {
-  const [sorting, setSorting] = React.useState<SortingState>([])
-
   const columns: ColumnDef<HashtagData>[] = [
     {
       id: 'rank',
@@ -131,37 +129,9 @@ export default function HashtagRankingsCard() {
     },
   ]
 
-  const handleDownloadCSV = () => {
-    const csvContent = [
-      ['Rank', 'Hashtag', 'Mentions'],
-      ...hashtagsData.map((item, index) => [
-        index + 1,
-        item.tag,
-        item.count
-      ])
-    ].map(row => row.join(',')).join('\n')
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
-    const link = document.createElement('a')
-    const url = URL.createObjectURL(blob)
-    link.setAttribute('href', url)
-    link.setAttribute('download', 'hashtag_rankings.csv')
-    link.style.visibility = 'hidden'
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-  }
-
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Hashtags Rankings</CardTitle>
-        <Button variant="outline" size="sm" onClick={handleDownloadCSV}>
-          <Download className="h-4 w-4 mr-2" />
-          Download
-        </Button>
-      </CardHeader>
-      <CardContent>
+    <Card className="shadow-none rounded-none border-0">
+      <CardContent className="p-0">
         <DataTable 
           columns={columns} 
           data={hashtagsData}

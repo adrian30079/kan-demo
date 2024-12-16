@@ -17,13 +17,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { CustomPieChart } from "@/components/ui/pie-chart"
+import { ChartDownloadButton } from "@/components/chart/chart-download-button"
+import { BarChartTemplate } from "@/components/chart/bar-chart-template"
 
-const platformData = [
-  { platform: "Facebook", percentage: 57.3, icon: "/img/media/ic-mediatype-facebook.png" },
-  { platform: "Instagram", percentage: 15.6, icon: "/img/media/ic-mediatype-instagram.png" },
-  { platform: "X", percentage: 17.4, icon: "/img/media/ic-mediatype-X.png" },
-  { platform: "Online Forum", percentage: 9.7, icon: "/img/media/ic-mediatype-forum.png" },
-]
 
 const sentimentOverTime = [
   { date: "01/Nov/2024", positive: 12, neutral: 18, negative: 5, mixed: 3 },
@@ -55,7 +51,14 @@ const sentimentOverTime = [
   { date: "27/Nov/2024", positive: 16, neutral: 13, negative: 3, mixed: 2 },
   { date: "28/Nov/2024", positive: 14, neutral: 15, negative: 5, mixed: 3 },
   { date: "29/Nov/2024", positive: 13, neutral: 16, negative: 4, mixed: 2 },
-  { date: "30/Nov/2024", positive: 15, neutral: 14, negative: 3, mixed: 3 }
+  { date: "30/Nov/2024", positive: 15, neutral: 14, negative: 3, mixed: 3 },
+  { date: "11/24", positive: 14, neutral: 15, negative: 3, mixed: 2 },
+  { date: "11/25", positive: 13, neutral: 16, negative: 5, mixed: 3 },
+  { date: "11/26", positive: 15, neutral: 14, negative: 4, mixed: 4 },
+  { date: "11/27", positive: 16, neutral: 13, negative: 3, mixed: 2 },
+  { date: "11/28", positive: 14, neutral: 15, negative: 5, mixed: 3 },
+  { date: "11/29", positive: 13, neutral: 16, negative: 4, mixed: 2 },
+  { date: "11/30", positive: 15, neutral: 14, negative: 3, mixed: 3 }
 ]
 
 const SENTIMENT_COLORS = {
@@ -65,37 +68,6 @@ const SENTIMENT_COLORS = {
   mixed: "#fbbf24"
 }
 
-const CustomPieTooltip = ({ 
-  active, 
-  payload 
-}: {
-  active?: boolean;
-  payload?: Array<{
-    name: string;
-    value: number;
-    payload: {
-      count: number;
-    };
-  }>;
-}) => {
-  if (active && payload && payload.length) {
-    const data = payload[0];
-    return (
-      <div className="bg-white p-3 rounded-lg shadow-md border border-gray-200">
-        <p className="font-semibold">{data.name}</p>
-        <p className="text-sm text-gray-600">
-          Count: <span className="font-medium">{data.payload.count}</span>
-        </p>
-        <p className="text-sm text-gray-600">
-          Percentage: <span className="font-medium">
-            {data.value.toFixed(1)}%
-          </span>
-        </p>
-      </div>
-    );
-  }
-  return null;
-};
 
 const channelSentimentData = [
   {
@@ -167,52 +139,9 @@ const transformChannelData = () => {
 export function HowTab() {
   const [activeIndex, setActiveIndex] = useState<number | undefined>()
 
-  const onPieEnter = (_: any, index: number) => {
-    setActiveIndex(index)
-  }
 
-  const onPieLeave = () => {
-    setActiveIndex(undefined)
-  }
 
-  const handleClick = (data: any, index: number) => {
-    console.log('Clicked:', data, index)
-    // Add your click handler logic here
-  }
 
-  const renderActiveShape = (props: any) => {
-    const RADIAN = Math.PI / 180
-    const { 
-      cx, cy, innerRadius, outerRadius, startAngle, endAngle,
-      fill, payload
-    } = props
-
-    return (
-      <g>
-        <text x={cx} y={cy} dy={8} textAnchor="middle" fill={fill}>
-          {payload.name}
-        </text>
-        <Sector
-          cx={cx}
-          cy={cy}
-          innerRadius={innerRadius}
-          outerRadius={outerRadius}
-          startAngle={startAngle}
-          endAngle={endAngle}
-          fill={fill}
-        />
-        <Sector
-          cx={cx}
-          cy={cy}
-          startAngle={startAngle}
-          endAngle={endAngle}
-          innerRadius={outerRadius + 6}
-          outerRadius={outerRadius + 10}
-          fill={fill}
-        />
-      </g>
-    )
-  }
 
   const calculateTotalSentiments = () => {
     const totals = sentimentOverTime.reduce((acc, curr) => {
@@ -235,72 +164,26 @@ export function HowTab() {
 
   const pieChartData = calculateTotalSentiments()
 
-  const handleDownload = (format: 'png' | 'csv') => {
-    if (format === 'csv') {
-      const csvContent = [
-        ['Sentiment', 'Count', 'Percentage'],
-        ...pieChartData.map(item => [item.name, item.count, item.value]),
-        ['Total', pieChartData.reduce((sum, item) => sum + item.count, 0), '100']
-      ].map(row => row.join(',')).join('\n')
-
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
-      const link = document.createElement('a')
-      link.href = URL.createObjectURL(blob)
-      link.download = 'sentiment_distribution.csv'
-      link.click()
-    } else if (format === 'png') {
-      // Get the SVG element
-      const svgElement = document.querySelector('.recharts-wrapper svg')
-      if (!svgElement) return
-
-      // Create a canvas
-      const canvas = document.createElement('canvas')
-      const ctx = canvas.getContext('2d')
-      if (!ctx) return
-
-      // Convert SVG to image
-      const svgData = new XMLSerializer().serializeToString(svgElement)
-      const img = new Image()
-      img.onload = () => {
-        canvas.width = img.width
-        canvas.height = img.height
-        ctx.drawImage(img, 0, 0)
-        const link = document.createElement('a')
-        link.download = 'sentiment_distribution.png'
-        link.href = canvas.toDataURL('image/png')
-        link.click()
-      }
-      img.src = 'data:image/svg+xml;base64,' + btoa(svgData)
-    }
-  }
+  const getLastSevenDaysData = () => {
+    return sentimentOverTime.slice(-7);
+  };
 
   return (
-    <div className="p-6 space-y-6">
-      <Card className="w-full rounded-none border-2 border-[#00A59A] shadow-none">
-        <CardHeader className="bg-[#00A59A] p-4">
-          <CardTitle className="text-white font-bold">Public Sentiment Distribution</CardTitle>
-        </CardHeader>
-        <CardContent className="p-6">
-          <div className="flex justify-end mb-4">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
-                  <Download className="mr-2 h-4 w-4" />
-                  Download
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => handleDownload('png')}>
-                  Download PNG
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleDownload('csv')}>
-                  Download CSV
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+    <div className="p-8 space-y-8">
+      <Card className="w-full shadow-none rounded-none border-0">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle>Public Sentiment Distribution</CardTitle>
+            <CardDescription>Overall breakdown of public sentiment across all channels</CardDescription>
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="h-[300px]">
+          <ChartDownloadButton 
+            data={pieChartData}
+            filename="sentiment_distribution"
+          />
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 gap-8">
+            <div className="h-[400px] flex items-center justify-center">
               <CustomPieChart 
                 data={pieChartData} 
                 showLabels={true}
@@ -348,177 +231,160 @@ export function HowTab() {
         </CardContent>
       </Card>
 
-      <Card className="w-full rounded-none border-2 border-[#00A59A] shadow-none">
-        <CardHeader className="bg-[#00A59A] p-4">
-          <CardTitle className="text-white font-bold">Public Sentiment Distribution over Time</CardTitle>
+      <Card className="w-full shadow-none rounded-none border-0 mt-8">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle>Public Sentiment Distribution over Time</CardTitle>
+            <CardDescription>Daily sentiment trends over the past week</CardDescription>
+          </div>
+          <ChartDownloadButton 
+            data={getLastSevenDaysData()}
+            filename="sentiment_over_time"
+          />
         </CardHeader>
-        <CardContent className="p-6">
-          <div className="space-y-4">
-            <div className="flex justify-end">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <Download className="mr-2 h-4 w-4" />
-                    Download
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem onClick={() => handleDownload('png')}>
-                    Download PNG
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleDownload('csv')}>
-                    Download CSV
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-            
-            <div className="h-[400px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart 
-                  data={sentimentOverTime}
-                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis />
-                  <RechartsTooltip />
-                  <Legend wrapperStyle={{ paddingTop: "20px" }} />
-                  <Bar 
-                    dataKey="positive" 
-                    fill="#4ade80" 
-                    name="Positive"
-                    radius={[4, 4, 0, 0]}
-                  />
-                  <Bar 
-                    dataKey="neutral" 
-                    fill="#94a3b8" 
-                    name="Neutral"
-                    radius={[4, 4, 0, 0]}
-                  />
-                  <Bar 
-                    dataKey="negative" 
-                    fill="#f87171" 
-                    name="Negative"
-                    radius={[4, 4, 0, 0]}
-                  />
-                  <Bar 
-                    dataKey="mixed" 
-                    fill="#fbbf24" 
-                    name="Mixed"
-                    radius={[4, 4, 0, 0]}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+        <CardContent>
+          <div className="h-[300px]">
+            <BarChartTemplate
+              data={getLastSevenDaysData()}
+              layout="horizontal"
+              type="grouped"
+              dataKey={["positive", "neutral", "negative", "mixed"]}
+              categoryKey="date"
+              colors={[
+                SENTIMENT_COLORS.positive,  // #4ade80
+                SENTIMENT_COLORS.neutral,   // #94a3b8
+                SENTIMENT_COLORS.negative,  // #f87171
+                SENTIMENT_COLORS.mixed      // #fbbf24
+              ]}
+              legendFormatter={(value) => {
+                // Capitalize first letter
+                return value.charAt(0).toUpperCase() + value.slice(1);
+              }}
+              content={({ active, payload, label }) => {
+                if (active && payload && payload.length) {
+                  const getSentimentEmoji = (sentiment: string) => {
+                    const lowercaseSentiment = sentiment.toLowerCase();
+                    switch (lowercaseSentiment) {
+                      case 'positive':
+                        return '😊';
+                      case 'neutral':
+                        return '😐';
+                      case 'negative':
+                        return '😞';
+                      case 'mixed':
+                        return '🤔';
+                      default:
+                        return '📊';
+                    }
+                  };
+
+                  return (
+                    <div className="bg-white p-4 border rounded shadow-lg">
+                      <p className="text-base font-semibold text-gray-900 mb-2 pb-2 border-b">
+                        {label}
+                      </p>
+                      <div className="space-y-1.5">
+                        {payload.map((entry: any, index: number) => (
+                          <div key={index} className="flex items-center">
+                            <span className="w-5 mr-2">
+                              {getSentimentEmoji(entry.name)}
+                            </span>
+                            <span className="text-gray-600">{entry.name}:</span>
+                            <span className="ml-2 font-medium">
+                              {entry.value.toLocaleString()} mentions
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                }
+                return null;
+              }}
+            />
           </div>
         </CardContent>
       </Card>
 
-      <Card className="w-full rounded-none border-2 border-[#00A59A] shadow-none">
-        <CardHeader className="bg-[#00A59A] p-4">
-          <CardTitle className="text-white font-bold">Public Sentiment Distribution across Channels</CardTitle>
+      <Card className="w-full shadow-none rounded-none border-0 mt-8">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle>Public Sentiment Distribution across Channels</CardTitle>
+            <CardDescription>Comparison of sentiment patterns across different social media platforms</CardDescription>
+          </div>
+          <ChartDownloadButton 
+            data={transformChannelData()}
+            filename="sentiment_by_channel"
+          />
         </CardHeader>
-        <CardContent className="p-6">
-          <div className="space-y-4">
-            <div className="flex justify-end">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <Download className="mr-2 h-4 w-4" />
-                    Download
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem onClick={() => handleDownload('png')}>
-                    Download PNG
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleDownload('csv')}>
-                    Download CSV
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-            
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={transformChannelData()}
-                  layout="vertical"
-                  margin={{ top: 20, right: 30, left: 100, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis 
-                    type="number" 
-                    domain={[0, 100]}
-                    tickFormatter={(value) => `${value}%`}
-                  />
-                  <YAxis type="category" dataKey="channel" />
-                  <RechartsTooltip
-                    formatter={(value: number, name: string) => {
-                      const sentimentType = name.split('.')[0];
-                      const data = transformChannelData();
-                      const channel = data.find(d => d.channel === name);
-                      return [`${value.toFixed(1)}% of total mentions`, sentimentType];
-                    }}
-                    labelFormatter={(label) => `Channel: ${label}`}
-                  />
-                  <Legend />
-                  <Bar
-                    dataKey="positive.percentage"
-                    stackId="stack"
-                    fill={SENTIMENT_COLORS.positive}
-                    name="Positive"
-                  >
-                    <LabelList
-                      dataKey="positive.percentage"
-                      position="center"
-                      formatter={(value: number) => (value > 5 ? `${value.toFixed(1)}%` : '')}
-                      fill="white"
-                    />
-                  </Bar>
-                  <Bar
-                    dataKey="neutral.percentage"
-                    stackId="stack"
-                    fill={SENTIMENT_COLORS.neutral}
-                    name="Neutral"
-                  >
-                    <LabelList
-                      dataKey="neutral.percentage"
-                      position="center"
-                      formatter={(value: number) => (value > 5 ? `${value.toFixed(1)}%` : '')}
-                      fill="white"
-                    />
-                  </Bar>
-                  <Bar
-                    dataKey="negative.percentage"
-                    stackId="stack"
-                    fill={SENTIMENT_COLORS.negative}
-                    name="Negative"
-                  >
-                    <LabelList
-                      dataKey="negative.percentage"
-                      position="center"
-                      formatter={(value: number) => (value > 5 ? `${value.toFixed(1)}%` : '')}
-                      fill="white"
-                    />
-                  </Bar>
-                  <Bar
-                    dataKey="mixed.percentage"
-                    stackId="stack"
-                    fill={SENTIMENT_COLORS.mixed}
-                    name="Mixed"
-                  >
-                    <LabelList
-                      dataKey="mixed.percentage"
-                      position="center"
-                      formatter={(value: number) => (value > 5 ? `${value.toFixed(1)}%` : '')}
-                      fill="white"
-                    />
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+        <CardContent>
+          <div className="h-[300px]">
+            <BarChartTemplate
+              data={transformChannelData()}
+              layout="vertical"
+              type="stacked"
+              dataKey={[
+                "positive.percentage",
+                "neutral.percentage",
+                "negative.percentage",
+                "mixed.percentage"
+              ]}
+              categoryKey="channel"
+              colors={[
+                SENTIMENT_COLORS.positive,
+                SENTIMENT_COLORS.neutral,
+                SENTIMENT_COLORS.negative,
+                SENTIMENT_COLORS.mixed
+              ]}
+              legendFormatter={(value) => {
+                // Remove .percentage from the legend labels
+                return value.split('.')[0].charAt(0).toUpperCase() + value.split('.')[0].slice(1);
+              }}
+              content={({ active, payload, label }) => {
+                if (active && payload && payload.length) {
+                  const getSentimentEmoji = (sentiment: string) => {
+                    const lowercaseSentiment = sentiment.split('.')[0].toLowerCase();
+                    switch (lowercaseSentiment) {
+                      case 'positive':
+                        return '😊';
+                      case 'neutral':
+                        return '😐';
+                      case 'negative':
+                        return '😞';
+                      case 'mixed':
+                        return '🤔';
+                      default:
+                        return '📊';
+                    }
+                  };
+
+                  return (
+                    <div className="bg-white p-4 border rounded shadow-lg">
+                      <p className="text-base font-semibold text-gray-900 mb-2 pb-2 border-b">
+                        {label}
+                      </p>
+                      <div className="space-y-1.5">
+                        {payload.map((entry: any, index: number) => (
+                          <div key={index} className="flex items-center">
+                            <span className="w-5 mr-2">
+                              {getSentimentEmoji(entry.name)}
+                            </span>
+                            <span className="text-gray-600">
+                              {entry.name.split('.')[0].charAt(0).toUpperCase() + 
+                               entry.name.split('.')[0].slice(1)}:
+                            </span>
+                            <span className="ml-2 font-medium">
+                              {entry.value.toFixed(1)}% of total mentions
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                }
+                return null;
+              }}
+            />
           </div>
         </CardContent>
       </Card>

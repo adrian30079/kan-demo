@@ -2,44 +2,41 @@
   "featuredTopics": [
     {
       "id": "1",
-      "name": "Cryptocurrency1",
-      "keywords": ["crypto","BTC","加密貨幣","比特幣","Web3","以太坊","Ethereum","區塊鏈","区块链","Blockchain","加密交易","crypto trading","DeFi","去中心化金融","NFT","非同質化代幣","非同质化代币","crypto wallet","加密錢包","加密钱包","Altcoin","山寨幣","山寨币","Stablecoin","穩定幣","稳定币","Tokenomics","代幣經濟學","代币经济学","Smart contracts","智能合約","智能合约","Metaverse","元宇宙","Crypto regulations","加密監管","加密监管","ICO","首次代幣發行","首次代币发行","Staking","質押","质押","Crypto exchange","加密交易所","加密交易所"],
+      "name": "虛擬資產 VATP",
       "mentions": 15243,
       "peopleTalking": 8976,
       "engagement": "1.2M",
-      "sentiment": 6,
       "impactIndex": 43210,
+      "variant": "default",
       "period": {
-        "start": "2023-06-01 00:00:00",
-        "end": "2023-06-30 23:59:59"
+        "start": "2024-11-01 00:00:00",
+        "end": "2024-11-30 23:59:59"
       }
     },
     {
       "id": "2",
-      "name": "Artificial Intelligence",
-      "keywords": ["AI","人工智能","人工智慧","Artificial Intelligence","深度學習","深度学习","Deep Learning","機器學習","机器学习","Machine Learning","ChatGPT","生成式AI","生成式人工智能","Generative AI","自然語言處理","自然语言处理","NLP","大模型","Large Language Model","LLM","強化學習","强化学习","Reinforcement Learning","AI Ethics","AI應用","AI应用","AI Applications","機器人技術","机器人技术","Robotics","虛擬助理","虚拟助理","Virtual Assistant","AI算法","AI演算法","AI Algorithms"],
+      "name": "唱高散貨 Suspicious Ramp and Dump",
       "mentions": 22567,
       "peopleTalking": 12453,
       "engagement": "2.5M",
-      "sentiment": 8,
       "impactIndex": 56789,
+      "variant": "default",
       "period": {
-        "start": "2023-06-01 00:00:00",
-        "end": "2023-06-30 23:59:59"
+        "start": "2024-11-01 00:00:00",
+        "end": "2024-11-30 23:59:59"
       }
     },
     {
       "id": "3",
-      "name": "JPEX Monitoring",
-      "keywords": ["crypto","JPEX","加密貨幣","比特幣","Web3","以太坊","Ethereum","區塊鏈","区块链","Blockchain","加密交易","crypto trading","DeFi","去中心化金融","NFT","非同質化代幣","非同质化代币","crypto wallet","加密錢包","加密钱包","Altcoin","山寨幣","山寨币","Stablecoin","穩定幣","稳定币","Tokenomics","代幣經濟學","代币经济学","Smart contracts","智能合約","智能合约","Metaverse","元宇宙","Crypto regulations","加密監管","加密监管","ICO","首次代幣發行","首次代币发行","Staking","質押","质押","Crypto exchange","加密交易所","加密交易所"],
+      "name": "Own Management",
       "mentions": 18976,
       "peopleTalking": 9876,
       "engagement": "1.8M",
-      "sentiment": 7,
       "impactIndex": 65432,
+      "variant": "comparison",
       "period": {
-        "start": "2023-06-01 00:00:00",
-        "end": "2023-06-30 23:59:59"
+        "start": "2024-11-01 00:00:00",
+        "end": "2024-11-30 23:59:59"
       }
     }
   ]

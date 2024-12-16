@@ -1,0 +1,586 @@
+{
+  "wordcloud_data": [
+    {
+      "word": "虛擬資產",
+      "count": 85,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "cryptocurrency",
+      "count": 82,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "區塊鏈",
+      "count": 78,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "digital assets",
+      "count": 75,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "加密貨幣",
+      "count": 72,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "VATP監管",
+      "count": 70,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "compliance",
+      "count": 68,
+      "sentiment": "positive",
+      "pos": "noun"
+    },
+    {
+      "word": "風險管理",
+      "count": 65,
+      "sentiment": "mixed",
+      "pos": "noun"
+    },
+    {
+      "word": "decentralized",
+      "count": 63,
+      "sentiment": "positive",
+      "pos": "adjective"
+    },
+    {
+      "word": "交易平台",
+      "count": 60,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "volatile",
+      "count": 58,
+      "sentiment": "negative",
+      "pos": "adjective"
+    },
+    {
+      "word": "數位錢包",
+      "count": 55,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "regulatory framework",
+      "count": 53,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "資金流向",
+      "count": 50,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "secure trading",
+      "count": 48,
+      "sentiment": "positive",
+      "pos": "noun"
+    },
+    {
+      "word": "市場波動",
+      "count": 45,
+      "sentiment": "negative",
+      "pos": "noun"
+    },
+    {
+      "word": "加密資產",
+      "count": 45,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "regulatory compliance",
+      "count": 44,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "區塊鏈技術",
+      "count": 43,
+      "sentiment": "positive",
+      "pos": "noun"
+    },
+    {
+      "word": "KYC verification",
+      "count": 43,
+      "sentiment": "positive",
+      "pos": "noun"
+    },
+    {
+      "word": "digital currency",
+      "count": 42,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "資產管理",
+      "count": 41,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "智能合約",
+      "count": 40,
+      "sentiment": "positive",
+      "pos": "noun"
+    },
+    {
+      "word": "crypto exchange",
+      "count": 40,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "監管科技",
+      "count": 39,
+      "sentiment": "positive",
+      "pos": "noun"
+    },
+    {
+      "word": "anti-money laundering",
+      "count": 38,
+      "sentiment": "positive",
+      "pos": "noun"
+    },
+    {
+      "word": "secure storage",
+      "count": 38,
+      "sentiment": "positive",
+      "pos": "noun"
+    },
+    {
+      "word": "交易紀錄",
+      "count": 37,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "risk monitoring",
+      "count": 36,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "去中心化",
+      "count": 35,
+      "sentiment": "mixed",
+      "pos": "noun"
+    },
+    {
+      "word": "數位資產交易",
+      "count": 35,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "NFT交易",
+      "count": 34,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "compliance check",
+      "count": 34,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "digital wallet security",
+      "count": 33,
+      "sentiment": "positive",
+      "pos": "noun"
+    },
+    {
+      "word": "交易所安全",
+      "count": 33,
+      "sentiment": "positive",
+      "pos": "noun"
+    },
+    {
+      "word": "監管合規",
+      "count": 32,
+      "sentiment": "positive",
+      "pos": "noun"
+    },
+    {
+      "word": "market regulation",
+      "count": 32,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "blockchain technology",
+      "count": 31,
+      "sentiment": "positive",
+      "pos": "noun"
+    },
+    {
+      "word": "資產追蹤",
+      "count": 31,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "交易安全",
+      "count": 30,
+      "sentiment": "positive",
+      "pos": "noun"
+    },
+    {
+      "word": "digital verification",
+      "count": 30,
+      "sentiment": "positive",
+      "pos": "noun"
+    },
+    {
+      "word": "market volatility",
+      "count": 29,
+      "sentiment": "negative",
+      "pos": "noun"
+    },
+    {
+      "word": "交易監控",
+      "count": 29,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "資產配置",
+      "count": 28,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "secure protocol",
+      "count": 28,
+      "sentiment": "positive",
+      "pos": "noun"
+    },
+    {
+      "word": "cybersecurity",
+      "count": 27,
+      "sentiment": "positive",
+      "pos": "noun"
+    },
+    {
+      "word": "風險預警",
+      "count": 27,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "流動性管理",
+      "count": 26,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "market integrity",
+      "count": 26,
+      "sentiment": "positive",
+      "pos": "noun"
+    },
+    {
+      "word": "transparent",
+      "count": 25,
+      "sentiment": "positive",
+      "pos": "adjective"
+    },
+    {
+      "word": "資產估值",
+      "count": 25,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "身份驗證",
+      "count": 24,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "regulatory reporting",
+      "count": 24,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "risk assessment",
+      "count": 23,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "交易策略",
+      "count": 23,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "數位支付",
+      "count": 22,
+      "sentiment": "positive",
+      "pos": "noun"
+    },
+    {
+      "word": "digital compliance",
+      "count": 22,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "風險分析",
+      "count": 21,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "跨境交易",
+      "count": 20,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "market surveillance",
+      "count": 20,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "secure platform",
+      "count": 19,
+      "sentiment": "positive",
+      "pos": "noun"
+    },
+    {
+      "word": "資產流動性",
+      "count": 19,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "投資組合",
+      "count": 18,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "secure infrastructure",
+      "count": 18,
+      "sentiment": "positive",
+      "pos": "noun"
+    },
+    {
+      "word": "digital transformation",
+      "count": 17,
+      "sentiment": "positive",
+      "pos": "noun"
+    },
+    {
+      "word": "交易合規",
+      "count": 17,
+      "sentiment": "positive",
+      "pos": "noun"
+    },
+    {
+      "word": "資訊安全",
+      "count": 16,
+      "sentiment": "positive",
+      "pos": "noun"
+    },
+    {
+      "word": "digital security",
+      "count": 16,
+      "sentiment": "positive",
+      "pos": "noun"
+    },
+    {
+      "word": "market analysis",
+      "count": 15,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "風險報告",
+      "count": 15,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "虛擬貨幣交易所",
+      "count": 14,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "market efficiency",
+      "count": 14,
+      "sentiment": "positive",
+      "pos": "noun"
+    },
+    {
+      "word": "innovative",
+      "count": 13,
+      "sentiment": "positive",
+      "pos": "adjective"
+    },
+    {
+      "word": "資產審計",
+      "count": 13,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "風險評估",
+      "count": 12,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "regulatory technology",
+      "count": 12,
+      "sentiment": "positive",
+      "pos": "noun"
+    },
+    {
+      "word": "digital economy",
+      "count": 11,
+      "sentiment": "positive",
+      "pos": "noun"
+    },
+    {
+      "word": "交易驗證",
+      "count": 11,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "交易量",
+      "count": 10,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "secure network",
+      "count": 10,
+      "sentiment": "positive",
+      "pos": "noun"
+    },
+    {
+      "word": "secure transaction",
+      "count": 9,
+      "sentiment": "positive",
+      "pos": "noun"
+    },
+    {
+      "word": "風險監測",
+      "count": 9,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "監管要求",
+      "count": 8,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "market transparency",
+      "count": 8,
+      "sentiment": "positive",
+      "pos": "noun"
+    },
+    {
+      "word": "market maker",
+      "count": 7,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "資產保管",
+      "count": 7,
+      "sentiment": "positive",
+      "pos": "noun"
+    },
+    {
+      "word": "資產tokenization",
+      "count": 6,
+      "sentiment": "positive",
+      "pos": "noun"
+    },
+    {
+      "word": "compliance audit",
+      "count": 6,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "交易系統",
+      "count": 5,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "交易對手",
+      "count": 4,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "digital governance",
+      "count": 4,
+      "sentiment": "positive",
+      "pos": "noun"
+    },
+    {
+      "word": "digital identity",
+      "count": 3,
+      "sentiment": "positive",
+      "pos": "noun"
+    },
+    {
+      "word": "風險評估報告",
+      "count": 3,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "風險控制",
+      "count": 2,
+      "sentiment": "positive",
+      "pos": "noun"
+    },
+    {
+      "word": "market stability",
+      "count": 2,
+      "sentiment": "positive",
+      "pos": "noun"
+    },
+    {
+      "word": "market liquidity",
+      "count": 1,
+      "sentiment": "neutral",
+      "pos": "noun"
+    },
+    {
+      "word": "資產安全",
+      "count": 1,
+      "sentiment": "positive",
+      "pos": "noun"
+    }
+  ]
+} 

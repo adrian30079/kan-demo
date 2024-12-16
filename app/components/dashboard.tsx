@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { Bell, ChevronLeft, ChevronRight, House, User, Folder, LineChart, Menu, MessageSquare, Search, Settings, Plus, Globe, LogOut } from 'lucide-react'
+import { format } from 'date-fns'
 
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -17,14 +18,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { TopicAnalysisComponent } from './topic-analysis'
-import { FeaturedTopics } from './featured-topics'
+import { AlertComponent } from './alert'
 import featuredTopicsData from '@/data/featured-topics.json'
 import { TopicCard } from './topic-card'
 import QueryContent from './query-content'
 import { Topic } from '@/types/topic'
-import { ManagerMentionsCard } from './manager-mentions'
 import { DashboardSidebar } from './dashboard-sidebar'
 import { DashboardHeader } from './dashboard-header'
+import { PostMonitoringCards } from "@/components/post-monitoring-cards"
 
 type MenuItem = {
   icon: React.ElementType;
@@ -40,6 +41,13 @@ type QueryResult = {
   date: string;
   sentiment: string;
 };
+
+interface TopicAnalysisProps {
+  topic: Topic;
+  onBack: () => void;
+  variant?: 'default' | 'comparison';
+  isFeaturedTopic?: boolean;
+}
 
 export function DashboardComponent() {
   const [isExpanded, setIsExpanded] = useState(true)
@@ -69,22 +77,23 @@ export function DashboardComponent() {
     { icon: Bell, name: 'Alerts', id: 'alerts' },
   ]
 
+  const formatDate = (date: Date) => {
+    return format(date, 'yyyy-MM-dd')
+  }
+
   const [featuredTopics, setFeaturedTopics] = useState<Topic[]>(() => 
     featuredTopicsData.featuredTopics
-      .filter(topic => 
-        !['jpex monitoring'].includes(topic.name.toLowerCase())
-      )
       .map(topic => ({
-        ...topic,
-        name: topic.name === 'Cryptocurrency1' ? '虛擬資產 VATP' :
-              topic.name === 'Artificial Intelligence' ? '唱高散貨 Suspicious Ramp and Dump' :
-              topic.name,
-        riskLevel: 'low',
-        emoji: undefined,
-        imageUrl: undefined,
+        id: topic.id,
+        name: topic.name,
+        mentions: topic.mentions,
+        peopleTalking: topic.peopleTalking,
+        engagement: topic.engagement,
+        impactIndex: topic.impactIndex,
+        variant: topic.variant || 'default',
         period: {
-          start: '2024-01-01',
-          end: '2024-12-31'
+          start: topic.period.start,
+          end: topic.period.end
         }
       }))
   );
@@ -205,13 +214,10 @@ export function DashboardComponent() {
 
   const renderQueryTab = () => {
     return (
-      <div className="space-y-6 p-6">
+      <div className="space-y-6 px-20 pt-8">
         <div className="space-y-2">
-        <h2 className="text-3xl font-bold text-[#008d84]">Query</h2>
-        <p className="text-md text-muted-foreground mb-6">
-          Search and analyze social media posts across multiple platforms. Use advanced search operators (AND, OR, NOT) to refine your results.
-        </p>
-        <QueryContent />
+          <h2 className="text-3xl font-bold text-[#00857C]">Query</h2>
+          <QueryContent />
         </div>
       </div>
     )
@@ -271,39 +277,40 @@ export function DashboardComponent() {
       case 'featured-topics':
         return (
           <div className={contentClass}>
-            <FeaturedTopics
-              topics={filterTopics(featuredTopics)}
-              searchTerm={searchTerm}
-              setSearchTerm={setSearchTerm}
-              openTopic={openTopic}
-              pinnedTopics={pinnedTopics}
-              onOpenChange={setOpenTopic}
-              onDuplicate={handleDuplicate}
-              onViewDetailedAnalysis={handleViewDetailedAnalysis}
-              onAddForComparison={handleAddForComparison}
-              onPinTopic={handlePinTopic}
-              onEmojiChange={(topic, emoji) => {
-                const updatedTopic: Topic = {
-                  ...topic,
-                  emoji,
-                  imageUrl: undefined
-                };
-                setFeaturedTopics(prev => 
-                  prev.map(t => t.id === topic.id ? updatedTopic : t)
-                );
-              }}
-              onImageChange={(topic, imageUrl) => {
-                const updatedTopic: Topic = {
-                  ...topic,
-                  imageUrl,
-                  emoji: undefined
-                };
-                setFeaturedTopics(prev => 
-                  prev.map(t => t.id === topic.id ? updatedTopic : t)
-                );
-              }}
-            />
-            <ManagerMentionsCard />
+            <div className="space-y-4 px-20 pt-8">
+              <h1 className="text-3xl font-bold text-[#00857C]">Featured Topics</h1>
+              <p className="text-md text-muted-foreground mb-4">
+                Featured Topics are curated collections of pre-defined keywords, strategically grouped to capture comprehensive data on specific subjects of interest.
+              </p>
+              <div className="mb-4 bg-white">
+                <Input
+                  type="text"
+                  placeholder="Search topics..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+              <div className="grid gap-4">
+                {filterTopics(featuredTopics).map((topic) => (
+                  <Collapsible
+                    key={topic.id}
+                    open={openTopic === topic.id}
+                    onOpenChange={() => setOpenTopic(openTopic === topic.id ? null : topic.id)}
+                  >
+                    <TopicCard
+                      variant={topic.variant as 'default' | 'comparison'}
+                      topic={topic}
+                      isPinned={pinnedTopics.has(topic.id)}
+                      isFeatured={true}
+                      onDuplicate={handleDuplicate}
+                      onViewDetailedAnalysis={handleViewDetailedAnalysis}
+                      onAddForComparison={handleAddForComparison}
+                      onPinTopic={handlePinTopic}
+                    />
+                  </Collapsible>
+                ))}
+              </div>
+            </div>
           </div>
         )
       case 'own-topics':
@@ -336,6 +343,7 @@ export function DashboardComponent() {
                       onOpenChange={() => setOpenTopic(openTopic === topic.id ? null : topic.id)}
                     >
                       <TopicCard
+                        variant={topic.variant as 'default' | 'comparison'}
                         topic={topic}
                         isPinned={pinnedTopics.has(topic.id)}
                         isFeatured={false}
@@ -345,26 +353,6 @@ export function DashboardComponent() {
                         onPinTopic={handlePinTopic}
                         onEdit={handleEditTopic}
                         onDelete={handleDeleteTopic}
-                        onEmojiChange={(topic, emoji) => {
-                          const updatedTopic: Topic = {
-                            ...topic,
-                            emoji,
-                            imageUrl: undefined
-                          };
-                          setOwnTopics(prev => 
-                            prev.map(t => t.id === topic.id ? updatedTopic : t)
-                          );
-                        }}
-                        onImageChange={(topic, imageUrl) => {
-                          const updatedTopic: Topic = {
-                            ...topic,
-                            imageUrl,
-                            emoji: undefined
-                          };
-                          setOwnTopics(prev => 
-                            prev.map(t => t.id === topic.id ? updatedTopic : t)
-                          );
-                        }}
                       />
                     </Collapsible>
                   ))}
@@ -403,12 +391,7 @@ export function DashboardComponent() {
           </div>
         )
       case 'alerts':
-        return (
-          <div className="container mx-auto p-6">
-            <h1 className="text-2xl font-bold mb-4">Alerts</h1>
-            <p>Set up and manage your social media monitoring alerts.</p>
-          </div>
-        )
+        return <AlertComponent />
       default:
         return (
           <div className="space-y-6">
@@ -421,6 +404,7 @@ export function DashboardComponent() {
                   onOpenChange={() => setOpenTopic(openTopic === topic.id ? null : topic.id)}
                 >
                   <TopicCard
+                    variant={topic.variant as 'default' | 'comparison'}
                     topic={topic}
                     isPinned={pinnedTopics.has(topic.id)}
                     isFeatured={true}
@@ -428,26 +412,6 @@ export function DashboardComponent() {
                     onViewDetailedAnalysis={handleViewDetailedAnalysis}
                     onAddForComparison={handleAddForComparison}
                     onPinTopic={handlePinTopic}
-                    onEmojiChange={(topic, emoji) => {
-                      const updatedTopic: Topic = {
-                        ...topic,
-                        emoji,
-                        imageUrl: undefined
-                      };
-                      setFeaturedTopics(prev => 
-                        prev.map(t => t.id === topic.id ? updatedTopic : t)
-                      );
-                    }}
-                    onImageChange={(topic, imageUrl) => {
-                      const updatedTopic: Topic = {
-                        ...topic,
-                        imageUrl,
-                        emoji: undefined
-                      };
-                      setFeaturedTopics(prev => 
-                        prev.map(t => t.id === topic.id ? updatedTopic : t)
-                      );
-                    }}
                   />
                 </Collapsible>
               ))}

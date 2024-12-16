@@ -148,7 +148,7 @@ export function CustomPieChart({
             );
           } : undefined}
         >
-          {data.map((entry, index) => (
+          {data.map((entry: PieChartData, index: number) => (
             <Cell 
               key={`cell-${index}`} 
               fill={SENTIMENT_COLORS[entry.name.toLowerCase() as keyof typeof SENTIMENT_COLORS]} 

@@ -3,7 +3,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Topic } from '@/types/topic'
 import { Pin, MoreVertical, MessageSquare, Users2, BarChart3, Activity, ThumbsUp } from 'lucide-react'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, AreaChart, Area } from 'recharts'
+import { 
+  LineChart, 
+  Line, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip as RechartsTooltip, 
+  ResponsiveContainer, 
+  AreaChart, 
+  Area, 
+  BarChart,
+  Bar
+} from 'recharts'
 import { CollapsibleContent } from "@/components/ui/collapsible"
 import { useState } from 'react'
 import {
@@ -13,8 +25,22 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { CustomPieChart, SENTIMENT_COLORS } from "@/components/ui/pie-chart"
+import ownManagementData from '@/data/own-management.json';
+import { BarChartTemplate } from "@/components/chart/bar-chart-template"
+
+// Update the variant type
+type TopicCardVariant = 'default' | 'comparison';
+
+// Add type definition for sentiment
+type Sentiment = {
+  positive: number;
+  negative: number;
+  neutral: number;
+  mixed: number;
+}
 
 interface TopicCardProps {
+  variant?: TopicCardVariant;
   topic: Topic
   isPinned: boolean
   isFeatured: boolean
@@ -29,6 +55,7 @@ interface TopicCardProps {
 }
 
 export function TopicCard({
+  variant = 'default',
   topic,
   isPinned,
   isFeatured,
@@ -43,29 +70,14 @@ export function TopicCard({
 }: TopicCardProps) {
   // Sample data for the Share of Voice chart
   const shareOfVoiceData = [
-    { name: 'Jan', value: 4000 },
-    { name: 'Feb', value: 3000 },
-    { name: 'Mar', value: 5000 },
-    { name: 'Apr', value: 2780 },
-    { name: 'May', value: 1890 },
-    { name: 'Jun', value: 2390 },
+    { name: '11/24', value: 2500 },
+    { name: '11/25', value: 4800 },
+    { name: '11/26', value: 1200 },
+    { name: '11/27', value: 3900 },
+    { name: '11/28', value: 800 },
+    { name: '11/29', value: 5200 },
+    { name: '11/30', value: 2100 },
   ]
-
-  // Calculate sentiment proportions
-  const calculateSentimentData = (sentiment: number) => {
-    // Convert sentiment score (0-10) to percentages
-    const positive = sentiment * 8 // Main sentiment score as percentage
-    const negative = Math.max(0, Math.min(12, 100 - positive)) // 0-15% negative
-    const neutral = Math.max(0, Math.min(25, 100 - positive - negative)) // 0-10% neutral
-    const mixed = Math.max(0, 100 - positive - negative - neutral) // Remaining is mixed
-    
-    return [
-      { name: "Positive", value: positive },
-      { name: "Negative", value: negative },
-      { name: "Neutral", value: neutral },
-      { name: "Mixed", value: mixed }
-    ]
-  }
 
   // Get stroke colors based on sentiment type
   const getSentimentColor = (type: 'positive' | 'negative' | 'neutral' | 'mixed') => {
@@ -82,12 +94,144 @@ export function TopicCard({
         return '#E5E7EB' // light gray
     }
   }
-
-  const sentimentProps = calculateSentimentData(topic.sentiment)
   const circumference = 2 * Math.PI * 45 // 45 is the radius
 
+  // Inside the TopicCard component, before rendering the CustomPieChart
+  const sentimentData = [
+    { name: 'positive', value: 35 },
+    { name: 'negative', value: 25 },
+    { name: 'neutral', value: 20 },
+    { name: 'mixed', value: 20 }
+  ];
+
+  console.log('Hardcoded Sentiment Data:', sentimentData);
+
+  // First, add the colors array at the top of your component or outside
+  const colors = ['#00B1A5', '#0070AC', '#593FB6', '#DA418E', '#E66A22', '#00857C', '#26A69A']
+
+  // First, let's transform the data to be grouped by date
+  const transformedData = [0, 1, 2, 3, 4, 5, 6].map((dateIndex) => {
+    const date = `11/${24 + dateIndex}`;
+    const dataPoint = {
+      date,
+      ...Object.fromEntries(
+        ownManagementData.management.map(manager => [
+          manager.managementName,
+          manager.mentions[dateIndex].value
+        ])
+      )
+    };
+    return dataPoint;
+  });
+
+  // Only modify the render logic based on variant
+  if (variant === 'comparison') {
+    return (
+      <Card className="mb-6 shadow-none border border-gray-200 rounded-none p-6">
+        <CardHeader className="mb-8">
+          <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-3">
+              <CardTitle className="text-3xl font-bold">{topic.name}</CardTitle>
+              <CardDescription className="text-sm text-gray-500">
+                Period: <span className="bg-gray-100 rounded-full px-2 py-1 italic">{topic.period.start}</span> to{" "}
+                <span className="bg-gray-100 rounded-full px-2 py-1 italic">{topic.period.end}</span>
+              </CardDescription>
+            </div>
+            <div className="flex items-center gap-3">
+              <Button 
+                variant="secondary" 
+                className="bg-[#00857C] text-white hover:bg-[#00857C]/90"
+                onClick={() => onViewDetailedAnalysis({
+                  ...topic,
+                  variant: 'comparison'
+                })}
+              >
+                Analysis
+                <MoreVertical className="h-4 w-4 ml-2" />
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => onPinTopic(topic.id)}
+                className={`${
+                  isPinned ? 'text-[#00857C]' : 'text-gray-400'
+                } hover:text-[#00857C] bg-gray-100 h-10 w-10 p-0`}
+              >
+                <Pin className={`h-4 w-4 ${isPinned ? 'rotate-45' : ''}`} />
+              </Button>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-8">
+          <div className="flex gap-6 h-[280px]">
+            {/* Left Column - Metrics */}
+            <div className="flex flex-col gap-2 w-[15%] h-full">
+              <Card className="h-[calc((280px-16px)/3)] border border-[#00857C] rounded-none shadow-none">
+                <div className="bg-[#00857C] px-4 py-2 h-[40px]">
+                  <div className="flex items-center gap-2">
+                    <MessageSquare className="h-4 w-4 text-white" />
+                    <span className="text-sm font-medium text-white">Total Mentions</span>
+                  </div>
+                </div>
+                <div className="h-[calc(100%-40px)] p-4 flex items-center justify-center">
+                  <p className="text-xl font-bold text-gray-900">{topic.mentions.toLocaleString()}</p>
+                </div>
+              </Card>
+
+              <Card className="h-[calc((280px-16px)/3)] border border-[#00857C] rounded-none shadow-none">
+                <div className="bg-[#00857C] px-4 py-2 h-[40px]">
+                  <div className="flex items-center gap-2">
+                    <Users2 className="h-4 w-4 text-white" />
+                    <span className="text-sm font-medium text-white">People Talking</span>
+                  </div>
+                </div>
+                <div className="h-[calc(100%-40px)] p-4 flex items-center justify-center">
+                  <p className="text-xl font-bold text-gray-900">{topic.peopleTalking.toLocaleString()}</p>
+                </div>
+              </Card>
+
+              <Card className="h-[calc((280px-16px)/3)] border border-[#00857C] rounded-none shadow-none">
+                <div className="bg-[#00857C] px-4 py-2 h-[40px]">
+                  <div className="flex items-center gap-2">
+                    <BarChart3 className="h-4 w-4 text-white" />
+                    <span className="text-sm font-medium text-white">Engagement</span>
+                  </div>
+                </div>
+                <div className="h-[calc(100%-40px)] p-4 flex items-center justify-center">
+                  <p className="text-xl font-bold text-gray-900">{topic.engagement}</p>
+                </div>
+              </Card>
+            </div>
+
+            {/* Right Column - Bar Chart */}
+            <Card className="border border-[#00857C] rounded-none flex-1 h-full shadow-none">
+              <div className="bg-[#00857C] px-4 py-2 h-[40px]">
+                <div className="flex items-center gap-2">
+                  <Activity className="h-4 w-4 text-white" />
+                  <span className="text-sm font-medium text-white">Executive Mentions</span>
+                </div>
+              </div>
+              <div className="h-[calc(100%-40px)] p-4 flex items-center justify-center">
+                <BarChartTemplate
+                  data={transformedData}
+                  dataKey={ownManagementData.management.map(manager => manager.managementName)}
+                  categoryKey="date"
+                  layout="horizontal"
+                  type="grouped"
+                  height="100%"
+                  width="100%"
+                  yAxisWidth={120}
+                />
+              </div>
+            </Card>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Return default variant (existing implementation)
   return (
-    <Card key={topic.id} className="mb-6 shadow-none border border-gray-200 rounded-none p-6">
+    <Card className="mb-6 shadow-none border border-gray-200 rounded-none p-6">
       <CardHeader className="mb-8">
         <div className="flex items-center justify-between">
           <div className="flex flex-col gap-3">
@@ -167,12 +311,14 @@ export function TopicCard({
                 <span className="text-sm font-medium text-white">Public Sentiment</span>
               </div>
             </div>
-            <div className="h-[calc(100%-40px)] p-2">
+            <div className="h-[calc(100%-40px)] p-2 flex items-center justify-center" style={{ minHeight: "200px" }}>
               <CustomPieChart 
-                data={calculateSentimentData(topic.sentiment)} 
+                data={sentimentData}
                 showLabels={false}
                 interactive={true}
                 size="large"
+                width="100%"
+                height="100%"
               />
             </div>
           </Card>
