@@ -1,14 +1,26 @@
 import { useState } from 'react'
 import { HighlightContext } from '@/contexts/highlight-context'
-import { Toaster } from "@/components/ui/toaster"
+import { LayoutProvider } from './contexts/layout-context'
 
-export default function RootLayout({ children }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   const [highlightText, setHighlightText] = useState<string[]>([])
 
   return (
-    <HighlightContext.Provider value={{ highlightText, setHighlightText }}>
-      {children}
-      <Toaster />
-    </HighlightContext.Provider>
+    <html lang="en">
+      <body>
+        <LayoutProvider>
+          <HighlightContext.Provider value={{ highlightText, setHighlightText }}>
+            <header id="header">
+              {/* Header content */}
+            </header>
+            <aside id="sidebar">
+              {/* Sidebar content */}
+            </aside>
+            {children}
+            <Toaster position="bottom-right" />
+          </HighlightContext.Provider>
+        </LayoutProvider>
+      </body>
+    </html>
   )
 } 

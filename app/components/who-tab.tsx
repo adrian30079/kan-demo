@@ -325,7 +325,7 @@ export function WhoTab() {
           </div>
         </CardHeader>
         <CardContent>
-          <BaseTreeMap 
+          {/*<BaseTreeMap 
             id="advocate-treemap"
             data={filteredTreeMapData.map(item => ({
               x: item.advocate,
@@ -389,7 +389,7 @@ export function WhoTab() {
                 </div>
               `
             }}
-          />
+          />*/}
         </CardContent>
       </Card>
 

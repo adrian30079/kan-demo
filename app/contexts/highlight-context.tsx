@@ -10,4 +10,4 @@ export const HighlightContext = createContext<HighlightContextType>({
   setHighlightText: () => {},
 })
 
-export const useHighlight = () => useContext(HighlightContext) 
+export const useHighlight = () => useContext(HighlightContext)

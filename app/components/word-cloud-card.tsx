@@ -24,7 +24,7 @@ interface WordCloudProps {
     verbs: boolean;
     adjectives: boolean;
   };
-  selectedWords: string[];
+  selectedWords: Set<string>;
 }
 
 export default function WordCloudsCardJensen({ sentimentFilters, posFilters, selectedWords }: WordCloudProps) {
@@ -48,7 +48,7 @@ export default function WordCloudsCardJensen({ sentimentFilters, posFilters, sel
       .attr("height", height);
 
     const words = wordCloudData.wordcloud_data
-      .filter(item => selectedWords.includes(item.word))
+      .filter(item => selectedWords.has(item.word))
       .filter(item => {
         if (sentimentFilters.all) return true;
         return (
@@ -170,6 +170,16 @@ export default function WordCloudsCardJensen({ sentimentFilters, posFilters, sel
             .transition()
             .duration(200)
             .style("opacity", 1);
+        })
+        .on("click", function(event, d) {
+          const customEvent = new CustomEvent('wordClicked', { 
+            detail: { 
+              word: d.text,
+              shouldExpand: true 
+            }
+          });
+          window.dispatchEvent(customEvent);
+          event.stopPropagation();
         });
 
       // Add debug information

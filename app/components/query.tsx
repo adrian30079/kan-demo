@@ -40,6 +40,7 @@ import {
 } from "@/components/ui/sheet"
 import { Maximize2, AlertTriangle, BarChart2, Tag, ThumbsUp, MessageSquare, Share2, ExternalLink } from 'lucide-react'
 import { QueryFilters } from './filter'
+import { QueryResultCards } from '@/components/query-result-cards'
 
 type QueryResult = {
   id: number;
@@ -306,36 +307,6 @@ export function QueryComponent() {
     }
   };
 
-  const renderAnalysisLabels = (result: QueryResult) => (
-    <div className="flex flex-wrap gap-2">
-      <span className={`inline-block px-2 py-1 text-xs font-semibold rounded-full ${
-        result.sentiment === 'positive' ? 'bg-green-100 text-green-800' :
-        result.sentiment === 'negative' ? 'bg-red-100 text-red-800' :
-        'bg-gray-100 text-gray-800'
-      }`}>
-        {result.sentiment}
-      </span>
-      <span className={`inline-block px-2 py-1 text-xs font-semibold rounded-full ${
-        result.riskLevel === 'high' ? 'bg-red-100 text-red-800' :
-        result.riskLevel === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-        'bg-green-100 text-green-800'
-      }`}>
-        <AlertTriangle className="inline-block w-3 h-3 mr-1" />
-        {result.riskLevel} risk
-      </span>
-      <span className="inline-block px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-        <BarChart2 className="inline-block w-3 h-3 mr-1" />
-        Risk score: {result.riskScore}
-      </span>
-      {result.entities.map((entity, index) => (
-        <span key={index} className="inline-block px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
-          <Tag className="inline-block w-3 h-3 mr-1" />
-          {entity}
-        </span>
-      ))}
-    </div>
-  )
-
   return (
     <div className="space-y-6 p-6 bg-background text-foreground">
       <h1 className="text-3xl font-bold mb-4">Query</h1>
@@ -382,81 +353,14 @@ export function QueryComponent() {
               </CardContent>
             </Card>
           ) : hasSearched ? (
-            queryResults.length > 0 ? (
-              queryResults.map((result) => (
-                <Card key={result.id}>
-                  <CardHeader className="relative">
-                    <CardTitle>{result.author}</CardTitle>
-                    <CardDescription>
-                      {result.authorHandle} • {result.platform} • {result.date} • {result.time}
-                    </CardDescription>
-                    <Sheet>
-                      <SheetTrigger asChild>
-                        <Button variant="ghost" size="icon" className="absolute top-4 right-4">
-                          <Maximize2 className="h-4 w-4" />
-                        </Button>
-                      </SheetTrigger>
-                      <SheetContent>
-                        <SheetHeader>
-                          <SheetTitle>{result.author}</SheetTitle>
-                          <SheetDescription>
-                            {result.authorHandle} • {result.platform} • {result.date} • {result.time}
-                          </SheetDescription>
-                        </SheetHeader>
-                        <div className="mt-4">
-                          <p>{result.content}</p>
-                        </div>
-                        <div className="mt-4 flex items-center space-x-4">
-                          <span><ThumbsUp className="inline mr-1" size={16} /> {result.likes}</span>
-                          <span><MessageSquare className="inline mr-1" size={16} /> {result.comments}</span>
-                          <span><Share2 className="inline mr-1" size={16} /> {result.shares}</span>
-                        </div>
-                        <div className="mt-4">
-                          {renderAnalysisLabels(result)}
-                        </div>
-                        <div className="mt-4">
-                          <Button variant="outline" size="sm" onClick={() => window.open(result.url, '_blank')}>
-                            <ExternalLink className="mr-2 h-4 w-4" />
-                            View Original Post
-                          </Button>
-                        </div>
-                      </SheetContent>
-                    </Sheet>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="relative">
-                      <p className="line-clamp-3">
-                        {result.content}
-                      </p>
-                    </div>
-                  </CardContent>
-                  <CardFooter className="flex flex-col items-start space-y-4">
-                    <div className="flex items-center space-x-4">
-                      <span><ThumbsUp className="inline mr-1" size={16} /> {result.likes}</span>
-                      <span><MessageSquare className="inline mr-1" size={16} /> {result.comments}</span>
-                      <span><Share2 className="inline mr-1" size={16} /> {result.shares}</span>
-                    </div>
-                    {renderAnalysisLabels(result)}
-                    <Button variant="outline" size="sm" className="mt-2" onClick={() => window.open(result.url, '_blank')}>
-                      <ExternalLink className="mr-2 h-4 w-4" />
-                      View Original Post
-                    </Button>
-                  </CardFooter>
-                </Card>
-              ))
-            ) : (
-              <Card>
-                <CardContent className="p-4">
-                  <p>No results found. Try adjusting your search or filters.</p>
-                </CardContent>
-              </Card>
-            )
+            <QueryResultCards 
+              searchTerm={querySearchTerm}
+            />
           ) : (
-            <Card>
-              <CardContent className="p-4">
-                <p>Enter a search query and click "Search" to see results.</p>
-              </CardContent>
-            </Card>
+            <div className="flex flex-col pt-20 items-center justify-center">
+              <img src="/img/query.png" alt="Query" className="mb-4 h-16 opacity-70" />
+              <p className="pt-4 text-gray-400">Enter a search query and click "Search" to see results.</p>
+            </div>
           )}
         </div>
       </div>

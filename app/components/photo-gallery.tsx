@@ -23,11 +23,14 @@ const imageUrls = extractImagesFromPosts()
 console.log(imageUrls) // Debug: Log the extracted image URLs
 
 interface PhotoGalleryProps {
-  images: string[];
-  onClose: () => void;
+  images: string[]
+  onClose: () => void
+  isOpen: boolean
 }
 
-export function PhotoGallery({ images, onClose }: PhotoGalleryProps) {
+export function PhotoGallery({ images, onClose, isOpen }: PhotoGalleryProps) {
+  if (!isOpen) return null;
+
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isGridView, setIsGridView] = useState(false)
 
@@ -71,9 +74,14 @@ export function PhotoGallery({ images, onClose }: PhotoGalleryProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-md z-50">
-      <div className="bg-white w-full h-full max-w-7xl max-h-[90vh] rounded-lg shadow-lg flex flex-col mx-4 relative">
-        {/* Top Bar */}
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+      <div className="relative bg-white p-4 rounded-lg w-[800px] h-[600px]">
+        <button 
+          onClick={onClose}
+          className="absolute top-2 right-2 p-2 rounded-full hover:bg-gray-100"
+        >
+          X
+        </button>
         <div className="flex justify-between items-center p-4 border-b">
           <h2 className="text-xl font-bold text-[#00857C]">Photo Gallery</h2>
           <div className="flex items-center space-x-2 bg-gray-100 rounded-lg p-2">
@@ -107,7 +115,7 @@ export function PhotoGallery({ images, onClose }: PhotoGalleryProps) {
         </div>
 
         {/* Main Content - Add fixed height to account for thumbnail bar */}
-        <div className="flex-grow overflow-hidden relative" style={{ height: 'calc(100% - 80px - 96px)' }}>
+        <div className="flex-grow overflow-hidden relative" style={{ height: 'calc(100% - 60px - 80px)' }}>
           {!isGridView && linkExtracted && (
             <div className="absolute bottom-4 right-4 bg-white/90 p-3 rounded-lg shadow-lg flex items-center gap-2">
               <Link className="h-4 w-4 text-[#00857C]" />
@@ -162,7 +170,7 @@ export function PhotoGallery({ images, onClose }: PhotoGalleryProps) {
                   <div className="flex items-center space-x-2">
                     {getCalloutContent(currentIndex)?.icon ? (
                       <img 
-                        src={getCalloutContent(currentIndex)?.icon} 
+                        src={getCalloutContent(currentIndex)?.icon || ''} 
                         alt={getCalloutContent(currentIndex)?.alt} 
                         className="w-4 h-4" 
                       />
@@ -186,7 +194,7 @@ export function PhotoGallery({ images, onClose }: PhotoGalleryProps) {
 
         {/* Thumbnail Navigation - Fixed height and position */}
         {!isGridView && (
-          <div className="absolute bottom-0 left-0 right-0 h-24 border-t bg-white rounded-b-lg">
+          <div className="absolute bottom-0 left-0 right-0 h-20 border-t bg-white rounded-b-lg">
             <div className="h-full overflow-x-auto flex items-center px-4">
               <div className="flex space-x-2 mx-auto">
                 {images.map((image, index) => (
@@ -194,7 +202,7 @@ export function PhotoGallery({ images, onClose }: PhotoGalleryProps) {
                     key={index}
                     src={image}
                     alt={`Thumbnail ${index + 1}`}
-                    className={`h-16 w-24 object-cover cursor-pointer rounded bg-gray-200 ${
+                    className={`h-14 w-20 object-cover cursor-pointer rounded ${
                       index === currentIndex ? 'ring-2 ring-[#00857C] ring-offset-2' : 'hover:ring-2 hover:ring-[#00857C]/50'
                     }`}
                     onClick={() => setCurrentIndex(index)}

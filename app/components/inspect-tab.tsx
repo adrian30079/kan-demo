@@ -27,8 +27,8 @@ import { BaseTreeMap, TreeMapItem } from './chart/base-treemap'
 import { ManageItemsDialog } from "@/components/ui/manage-items-dialog"
 import { ChartDownloadButton } from './chart/chart-download-button'
 import { BarChartTemplate } from './chart/bar-chart-template'
-import { DataTable, SortableHeader } from "@/components/data-table"
-import { ColumnDef } from "@tanstack/react-table"
+import { DataTable, handleSort, SortableHeader } from "@/components/data-table"
+import { ColumnDef, SortingState } from "@tanstack/react-table"
 
 type Post = {
   id: string

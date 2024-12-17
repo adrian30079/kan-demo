@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import wordCloudData from '@/data/word-cloud.json'
 import hashtagData from '@/data/hashtag.json'
 import { BaseTreeMap, TreeMapItem } from './chart/base-treemap'
@@ -28,10 +28,12 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { PostMonitoringCards } from './post-monitoring-cards'
 import WordCloudsCardJensen from './word-cloud-card'
-import { Download, RefreshCw, Settings, Filter } from 'lucide-react'
+import { Download, RefreshCw, Settings, Filter, Maximize2, Minimize2 } from 'lucide-react'
 import { ManageItemsDialog } from "@/components/ui/manage-items-dialog"
 import { ChartDownloadButton } from "@/components/chart/chart-download-button"
 import { Checkbox } from "@/components/ui/checkbox"
+import { useLayout } from '@/contexts/layout-context'
+import { cn } from '@/lib/utils'
 
 // Use the data from hashtags.json
 const hashtagsData = hashtagData.hashtag_data
@@ -84,6 +86,7 @@ function HashtagTreeMap({ data, selectedHashtags }: {
 }
 
 export function WhatTab() {
+  const { sidebarWidth, headerHeight } = useLayout()
   const [selectedHashtags, setSelectedHashtags] = React.useState(
     new Set(hashtagsData.slice(0, 20).map(item => item.tag))
   );
@@ -157,8 +160,25 @@ export function WhatTab() {
   )
 
   // Add these new state variables
-  const [searchTerm, setSearchTerm] = useState("")
-  const [sortKey, setSortKey] = useState("date")
+  const [isSlideExpanded, setIsSlideExpanded] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortKey, setSortKey] = useState("impactDesc");
+  const [showPostOverlay, setShowPostOverlay] = useState(false);
+
+  // Add this effect to handle word clicks
+  useEffect(() => {
+    const handleWordClick = (event: CustomEvent) => {
+      setSearchTerm(event.detail.word);
+      if (event.detail.shouldExpand) {
+        setIsSlideExpanded(true);
+      }
+    };
+
+    window.addEventListener('wordClicked', handleWordClick as EventListener);
+    return () => {
+      window.removeEventListener('wordClicked', handleWordClick as EventListener);
+    };
+  }, []);
 
   return (
     <div className="w-full p-4">
@@ -280,14 +300,23 @@ export function WhatTab() {
           </div>
         </CardHeader>
         <CardContent>
-          <WordCloudsCardJensen 
-            sentimentFilters={sentimentFilters}
-            posFilters={posFilters}
-            selectedWords={wordCloudData.wordcloud_data
-              .sort((a, b) => b.count - a.count)
-              .slice(0, 50)
-              .map(item => item.word)}
-          />
+          <div className="relative">
+            <WordCloudsCardJensen 
+              sentimentFilters={sentimentFilters}
+              posFilters={posFilters}
+              selectedWords={selectedWords}
+            />
+            <PostMonitoringCards
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
+              sortKey={sortKey}
+              onSortChange={setSortKey}
+              isExpanded={isSlideExpanded}
+              variant="sliding"
+              onClose={() => setIsSlideExpanded(false)}
+              showOverlay={showPostOverlay}
+            />
+          </div>
         </CardContent>
       </Card>
 
@@ -339,26 +368,27 @@ export function WhatTab() {
 
       {/* Mentions Section */}
       <Card className="border">
-        <CardHeader>
-          <div className="flex justify-between items-center">
-            <div>
-              <CardTitle>Mentions</CardTitle>
-              <CardDescription>
-                Monitor and analyze social media mentions
-              </CardDescription>
-            </div>
-            {/* Add download or other controls */}
+        <CardHeader className="flex flex-row items-center justify-between p-6">
+          <div>
+            <CardTitle>Mentions</CardTitle>
+            <CardDescription>
+              Monitor and analyze social media mentions
+            </CardDescription>
           </div>
         </CardHeader>
-        <CardContent>
-          <PostMonitoringCards 
-            variant="default"
-            renderControls={() => null}
-            searchTerm={searchTerm}
-            onSearchChange={setSearchTerm}
-            sortKey={sortKey}
-            onSortChange={setSortKey}
-          />
+        <CardContent className="p-0">
+          <div className="h-[600px]">
+            <PostMonitoringCards 
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
+              sortKey={sortKey}
+              onSortChange={setSortKey}
+              isExpanded={false}
+              variant="default"
+              showOverlay={showPostOverlay}
+              onClose={() => setShowPostOverlay(false)}
+            />
+          </div>
         </CardContent>
       </Card>
 
